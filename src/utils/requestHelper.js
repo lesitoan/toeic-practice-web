@@ -13,7 +13,7 @@ const axiosInstance = axios.create({
 });
 
 class RequestHelpers {
-  get = async (baseUrl, url, params, enableErrorNoti = false, logError = true, headers = {}) => {
+  async get(baseUrl, url, params, enableErrorNoti = false, logError = true, headers = {}) {
     try {
       const response = await axiosInstance.get(`${baseUrl}${url}`, {
         params,
@@ -24,45 +24,45 @@ class RequestHelpers {
     } catch (error) {
       throw handleRequestError(error, enableErrorNoti, logError);
     }
-  };
+  }
 
-  post = async (baseUrl, url, data = {}, options = {}, enableErrorNoti = false) => {
+  async post(baseUrl, url, data = {}, options = {}, enableErrorNoti = false) {
     try {
       const response = await axiosInstance.post(`${baseUrl}${url}`, data, options);
       return response.data;
     } catch (error) {
       throw handleRequestError(error, enableErrorNoti);
     }
-  };
+  }
 
-  put = async (baseUrl, url, data = {}, options = {}, enableErrorNoti = false) => {
+  async put(baseUrl, url, data = {}, options = {}, enableErrorNoti = false) {
     try {
       const response = await axiosInstance.put(`${baseUrl}${url}`, data, options);
       return response.data;
     } catch (error) {
       throw handleRequestError(error, enableErrorNoti);
     }
-  };
+  }
 
-  patch = async (baseUrl, url, data = {}, options = {}, enableErrorNoti = false) => {
+  async patch(baseUrl, url, data = {}, options = {}, enableErrorNoti = false) {
     try {
       const response = await axiosInstance.patch(`${baseUrl}${url}`, data, options);
       return response.data;
     } catch (error) {
       throw handleRequestError(error, enableErrorNoti);
     }
-  };
+  }
 
-  delete = async (baseUrl, url, options = {}, enableErrorNoti = false) => {
+  async delete(baseUrl, url, options = {}, enableErrorNoti = false) {
     try {
       const response = await axiosInstance.delete(`${baseUrl}${url}`, options);
       return response.data;
     } catch (error) {
       throw handleRequestError(error, enableErrorNoti);
     }
-  };
+  }
 
-  setAuthorizationToken = (token) => {
+  setAuthorizationToken(token) {
     axiosInstance.interceptors.request.use(function (config) {
       config.headers = {
         ...config.headers,
@@ -70,7 +70,7 @@ class RequestHelpers {
       };
       return config;
     });
-  };
+  }
 }
 
 const handleRequestError = (error, enableErrorNoti, logError) => {
