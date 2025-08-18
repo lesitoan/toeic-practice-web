@@ -1,11 +1,14 @@
 'use client';
-import { usePathname } from 'next/navigation';
+import { useCallback } from 'react';
+import { NextUIProvider } from '@nextui-org/react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { usePathname, useRouter } from 'next/navigation';
 import { LAYOUT_CONFIG } from './configLayout';
 import MainLayout from '../mainLayout';
-import { useCallback } from 'react';
 
 export default function InitLayout({ children }) {
   const pathname = usePathname();
+  const router = useRouter();
 
   const renderLayout = useCallback(() => {
     const Layout = LAYOUT_CONFIG.find((item) => {
@@ -19,5 +22,11 @@ export default function InitLayout({ children }) {
     return <MainLayout>{children}</MainLayout>;
   }, [children, pathname]);
 
-  return <div>{renderLayout()}</div>;
+  return (
+    <NextUIProvider navigate={router.push}>
+      <NextThemesProvider attribute="class" defaultTheme="light">
+        <div>{renderLayout()}</div>
+      </NextThemesProvider>
+    </NextUIProvider>
+  );
 }
