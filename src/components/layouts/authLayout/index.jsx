@@ -8,8 +8,8 @@ export default function AuthLayout({ children }) {
 
   return (
     <MainLayout>
-      <div className="w-full min-h-screen flex items-center justify-center p-4">
-        <div className="w-full rounded-lg overflow-hidden shadow-lg">
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="rounded-lg overflow-hidden shadow-lg">
           <div className="flex flex-col lg:flex-row min-h-[600px]">
             {/* Left Side - Image & Branding */}
             <div className="lg:w-1/2 relative bg-gradient-to-br from-blue-600 via-blue-500 to-blue-800 p-8 flex flex-col justify-between">
