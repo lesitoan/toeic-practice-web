@@ -3,10 +3,12 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { NAVIGATE_ITEM, WEB_TITLE } from '../constants/constants';
 import { Image, Button } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
 
 // Header Component
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <header className="bg-bgPrimary shadow-sm border-b border-gray-200">
@@ -35,7 +37,9 @@ export default function Header() {
 
           {/* Sign Up Button */}
 
-          <Button color="primary">Đăng nhập</Button>
+          <Button color="primary" onPress={() => router.push('/login')}>
+            Đăng nhập
+          </Button>
 
           {/* Mobile menu button */}
           <div className="lg:hidden">

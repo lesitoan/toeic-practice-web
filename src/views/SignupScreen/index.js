@@ -1,7 +1,6 @@
-
+'use client';
+import SignupForm from './components/SignupForm';
 
 export default function SignupScreen() {
-  return (
-    <div>SIGNUP SCREEN</div>
-  )
+  return <SignupForm />;
 }

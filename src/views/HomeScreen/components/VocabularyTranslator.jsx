@@ -183,7 +183,7 @@ const VocabularyTranslator = () => {
           />
           <Button
             color=""
-            onClick={handleTranslate}
+            onPress={handleTranslate}
             disabled={isLoading}
             className="absolute right-1 top-1/2 transform -translate-y-1/2 p-2 disabled:opacity-50 transition-colors"
           >
