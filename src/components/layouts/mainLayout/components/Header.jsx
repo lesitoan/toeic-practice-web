@@ -11,8 +11,8 @@ export default function Header() {
   const router = useRouter();
 
   return (
-    <header className="bg-bgPrimary shadow-sm border-b border-gray-200">
-      <div className=" w-full">
+    <header className="sticky top-0 z-50 bg-bgPrimary shadow-sm border-b border-gray-200">
+      <div className=" w-full xl:max-w-[1400px] mx-auto">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
