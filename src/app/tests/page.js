@@ -1,4 +1,4 @@
-import TestsScreen from '@/views/TestsScreen';
+import TestsScreen from '@/views/TestScreen';
 
 export default function TestsPage() {
   return <TestsScreen />;
