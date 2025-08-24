@@ -1,5 +1,5 @@
 import { CheckCircle } from 'lucide-react';
-import { ACHIEVEMENTS } from '../constans';
+import { ACHIEVEMENTS } from '../constants';
 
 const Achievements = () => {
   return (

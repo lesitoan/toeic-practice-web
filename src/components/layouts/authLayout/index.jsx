@@ -1,4 +1,4 @@
-import { WEB_APP_NAME } from '@/constans/common';
+import { WEB_APP_NAME } from '@/constants/common';
 import { Image } from '@nextui-org/react';
 import MainLayout from '../mainLayout';
 import { useRouter } from 'next/navigation';

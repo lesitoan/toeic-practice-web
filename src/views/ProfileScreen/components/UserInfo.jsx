@@ -1,5 +1,5 @@
 import { Mail, Calendar, Crown, Edit2, Settings } from 'lucide-react';
-import { USER_DATA } from '../constans';
+import { USER_DATA } from '../constants';
 
 export default function UserInfo() {
   const isPro = false;

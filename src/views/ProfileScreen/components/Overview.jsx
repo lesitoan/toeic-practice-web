@@ -8,7 +8,7 @@ import {
   FileText,
   Headphones,
 } from 'lucide-react';
-import { USER_DATA } from '../constans';
+import { USER_DATA } from '../constants';
 
 const StatCard = ({ stat }) => (
   <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">

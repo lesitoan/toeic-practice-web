@@ -7,7 +7,7 @@ import Activity from './components/Activity';
 import SettingComponent from './components/SettingComponent';
 import UserInfo from './components/UserInfo';
 import BannerPro from './components/BannerPro';
-import { PERSONAL_INFO, TABS } from './constans';
+import { PERSONAL_INFO, TABS } from './constants';
 import { Button } from '@nextui-org/react';
 
 const ProfilePage = () => {
