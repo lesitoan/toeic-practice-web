@@ -39,6 +39,9 @@ export default {
         h5: ['1.25rem', { lineHeight: '1.75rem', fontWeight: '500' }], // 20px
         h6: ['1rem', { lineHeight: '1.5rem', fontWeight: '500' }], // 16px
       },
+      backgroundImage: {
+        'primary-gradient': 'linear-gradient(to right, #2563eb, #4f46e5)',
+      },
     },
   },
   plugins: [

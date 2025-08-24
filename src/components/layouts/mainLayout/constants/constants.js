@@ -1,10 +1,10 @@
 export const NAVIGATE_ITEM = [
-  { name: 'Giới thiệu', href: '/gioi-thieu' },
-  { name: 'Học từ vựng', href: '/hoc-tu-vung' },
+  { name: 'Giới thiệu', href: '/about' },
+  { name: 'Học từ vựng', href: '/vocabulary' },
   { name: 'Đề thi online', href: '/tests' },
   { name: 'Flashcards', href: '/flashcards' },
   { name: 'Blog', href: '/blog' },
-  { name: 'Nâng cấp tài khoản', href: '/kich-hoat' },
+  { name: 'Nâng cấp tài khoản', href: '/profile' },
 ];
 
 export const WEB_TITLE = 'TOEIC PRACTICE';
