@@ -1,0 +1,91 @@
+export const mockCollections = [
+  {
+    id: 'business',
+    title: 'Business Vocabulary',
+    slug: 'business-vocabulary',
+    description: 'Essential business terms for TOEIC',
+    wordCount: 150,
+    lastStudied: '2024-01-20',
+    progress: 75,
+    color: 'bg-blue-500',
+  },
+  {
+    id: 'travel',
+    title: 'Travel & Transportation',
+    slug: 'travel-transportation',
+    description: 'Travel-related vocabulary',
+    wordCount: 120,
+    lastStudied: '2024-01-18',
+    progress: 60,
+    color: 'bg-green-500',
+  },
+  {
+    id: 'daily-life',
+    title: 'Daily Life',
+    slug: 'daily-life',
+    description: 'Common daily activities and situations',
+    wordCount: 200,
+    lastStudied: '2024-01-15',
+    progress: 40,
+    color: 'bg-purple-500',
+  },
+  {
+    id: 'workplace',
+    title: 'Workplace Communication',
+    slug: 'workplace-communication',
+    description: 'Office and workplace vocabulary',
+    wordCount: 180,
+    lastStudied: null,
+    progress: 0,
+    color: 'bg-orange-500',
+  },
+];
+
+export const mockHistory = [
+  {
+    id: '1',
+    collectionTitle: 'Business Vocabulary',
+    studiedAt: '2024-01-20T10:30:00',
+    wordsStudied: 25,
+    accuracy: 85,
+    timeSpent: 15,
+  },
+  {
+    id: '2',
+    collectionTitle: 'Travel & Transportation',
+    studiedAt: '2024-01-18T14:20:00',
+    wordsStudied: 30,
+    accuracy: 72,
+    timeSpent: 20,
+  },
+];
+
+export const mockFlashcards = [
+  {
+    id: '1',
+    word: 'Accomplish',
+    pronunciation: '/əˈkɒmplɪʃ/',
+    meaning: 'Hoàn thành, đạt được',
+    example: 'She accomplished her goals within the deadline.',
+    translation: 'Cô ấy đã hoàn thành mục tiêu trong thời hạn.',
+    difficulty: 'intermediate',
+  },
+  {
+    id: '2',
+    word: 'Negotiate',
+    pronunciation: '/nɪˈɡəʊʃieɪt/',
+    meaning: 'Đàm phán, thương lượng',
+    example: 'We need to negotiate the terms of the contract.',
+    translation: 'Chúng ta cần đàm phán các điều khoản của hợp đồng.',
+    difficulty: 'advanced',
+  },
+  {
+    id: '3',
+    word: 'Schedule',
+    pronunciation: '/ˈʃedjuːl/',
+    meaning: 'Lịch trình, sắp xếp',
+    example: 'Please schedule a meeting for next week.',
+    translation: 'Vui lòng sắp xếp một cuộc họp cho tuần tới.',
+    difficulty: 'basic',
+  },
+];
