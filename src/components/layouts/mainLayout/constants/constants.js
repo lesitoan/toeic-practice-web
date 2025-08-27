@@ -3,7 +3,7 @@ export const NAVIGATE_ITEM = [
   { name: 'Học từ vựng', href: '/vocabulary' },
   { name: 'Đề thi online', href: '/tests' },
   { name: 'Flashcards', href: '/flashcards' },
-  { name: 'Blog', href: '/blog' },
+  { name: 'Blog', href: '/posts' },
   { name: 'Nâng cấp tài khoản', href: '/profile' },
 ];
 
