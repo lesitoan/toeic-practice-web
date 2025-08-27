@@ -6,6 +6,7 @@ export default function TestList() {
     {
       id: 1,
       title: 'TOEIC Practice 1',
+      slug: 'toeic-practice-1',
       duration: 40,
       participants: 213045,
       comments: 463,
@@ -17,6 +18,7 @@ export default function TestList() {
     {
       id: 2,
       title: 'TOEIC Practice 2',
+      slug: 'toeic-practice-2',
       duration: 40,
       participants: 110904,
       comments: 205,
@@ -28,6 +30,7 @@ export default function TestList() {
     {
       id: 3,
       title: 'TOEIC Practice 3',
+      slug: 'toeic-practice-3',
       duration: 40,
       participants: 77370,
       comments: 220,
@@ -39,6 +42,7 @@ export default function TestList() {
     {
       id: 4,
       title: 'TOEIC Practice 4',
+      slug: 'toeic-practice-4',
       duration: 40,
       participants: 63300,
       comments: 101,
@@ -50,6 +54,7 @@ export default function TestList() {
     {
       id: 5,
       title: 'TOEIC Practice 5',
+      slug: 'toeic-practice-5',
       duration: 40,
       participants: 57564,
       comments: 147,
@@ -61,6 +66,7 @@ export default function TestList() {
     {
       id: 6,
       title: 'TOEIC Practice 6',
+      slug: 'toeic-practice-6',
       duration: 40,
       participants: 53013,
       comments: 114,
@@ -72,6 +78,7 @@ export default function TestList() {
     {
       id: 7,
       title: 'TOEIC Practice 7',
+      slug: 'toeic-practice-7',
       duration: 40,
       participants: 48714,
       comments: 99,
@@ -83,6 +90,7 @@ export default function TestList() {
     {
       id: 8,
       title: 'TOEIC Practice 8',
+      slug: 'toeic-practice-8',
       duration: 40,
       participants: 47019,
       comments: 79,

@@ -1,8 +1,15 @@
 import React from 'react';
 import { Clock, Users, MessageSquare, FileText } from 'lucide-react';
 import { Button } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
 
 export default function TestCard({ test }) {
+  const router = useRouter();
+
+  const handleStartTest = () => {
+    router.push(`/tests/${test.slug}`);
+  };
+
   return (
     <div className="bg-gray-700 rounded-lg p-4 border border-gray-700 hover:border-gray-600 hover:scale-105 transition-all duration-200 cursor-pointer">
       {/* Test Title */}
@@ -48,8 +55,8 @@ export default function TestCard({ test }) {
       </div>
 
       {/* Action Button */}
-      <Button color="primary" className="w-full !rounded-lg" size="sm">
-        Xem thêm đề thi
+      <Button color="primary" className="w-full !rounded-lg" size="sm" onPress={handleStartTest}>
+        Làm đề thi
       </Button>
     </div>
   );

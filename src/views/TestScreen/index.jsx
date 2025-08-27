@@ -8,6 +8,7 @@ const allTests = [
   {
     id: 1,
     title: 'TOEIC Practice 1',
+    slug: 'toeic-practice-1',
     duration: 40,
     participants: 213045,
     comments: 463,
@@ -19,6 +20,7 @@ const allTests = [
   {
     id: 2,
     title: 'TOEIC Practice 2',
+    slug: 'toeic-practice-2',
     duration: 40,
     participants: 110904,
     comments: 205,
@@ -30,6 +32,7 @@ const allTests = [
   {
     id: 3,
     title: 'TOEIC Practice 3',
+    slug: 'toeic-practice-3',
     duration: 40,
     participants: 77370,
     comments: 220,
@@ -41,6 +44,7 @@ const allTests = [
   {
     id: 4,
     title: 'TOEIC Practice 4',
+    slug: 'toeic-practice-4',
     duration: 40,
     participants: 63300,
     comments: 101,
@@ -52,6 +56,7 @@ const allTests = [
   {
     id: 5,
     title: 'TOEIC Practice 5',
+    slug: 'toeic-practice-5',
     duration: 40,
     participants: 57564,
     comments: 147,
@@ -63,6 +68,7 @@ const allTests = [
   {
     id: 6,
     title: 'TOEIC Practice 6',
+    slug: 'toeic-practice-6',
     duration: 40,
     participants: 53013,
     comments: 114,
@@ -74,6 +80,7 @@ const allTests = [
   {
     id: 7,
     title: 'TOEIC Practice 7',
+    slug: 'toeic-practice-7',
     duration: 40,
     participants: 48714,
     comments: 99,
@@ -85,6 +92,7 @@ const allTests = [
   {
     id: 8,
     title: 'TOEIC Practice 8',
+    slug: 'toeic-practice-8',
     duration: 40,
     participants: 47019,
     comments: 79,
@@ -96,6 +104,7 @@ const allTests = [
   {
     id: 9,
     title: 'IELTS Writing Task 1',
+    slug: 'ielts-writing-task-1',
     duration: 60,
     participants: 35420,
     comments: 156,
@@ -107,6 +116,7 @@ const allTests = [
   {
     id: 10,
     title: 'IELTS Speaking Practice',
+    slug: 'ielts-speaking-practice',
     duration: 30,
     participants: 28900,
     comments: 89,
@@ -118,6 +128,7 @@ const allTests = [
   {
     id: 11,
     title: 'Grammar Foundation',
+    slug: 'grammar-foundation',
     duration: 45,
     participants: 45600,
     comments: 234,
@@ -129,6 +140,7 @@ const allTests = [
   {
     id: 12,
     title: 'Vocabulary Builder',
+    slug: 'vocabulary-builder',
     duration: 25,
     participants: 67800,
     comments: 178,
