@@ -1,8 +1,12 @@
 import { useState } from 'react';
-import { PARTS } from '../../constants';
 import { Play } from 'lucide-react';
+import { Button } from '@nextui-org/react';
+import { useRouter, useParams } from 'next/navigation';
+import { PARTS } from '../../constants';
 
 export default function PartSelection() {
+  const router = useRouter();
+  const params = useParams();
   const [selectedParts, setSelectedParts] = useState([]);
 
   const handlePartSelect = (partId) => {
@@ -100,14 +104,14 @@ export default function PartSelection() {
               </p>
             )}
           </div>
-          <button
-            onClick={() => {}}
+          <Button
+            onPress={() => router.push(`/tests/${params.testSlug}/start`)}
             className={`${selectedParts.length > 0 ? 'hover:bg-blue-700 cursor-pointer' : 'opacity-80 cursor-not-allowed'} bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2`}
             disabled={selectedParts.length === 0}
           >
             <Play className="w-5 h-5" />
             Bắt đầu thi
-          </button>
+          </Button>
         </div>
       </div>
     </div>
