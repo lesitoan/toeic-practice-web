@@ -5,6 +5,7 @@ import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { usePathname, useRouter } from 'next/navigation';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
+import { CookiesProvider } from 'react-cookie';
 import store from '@/stores/stores';
 import { LAYOUT_CONFIG } from './configLayout';
 import MainLayout from '../mainLayout';
@@ -28,10 +29,12 @@ export default function InitLayout({ children }) {
   return (
     <NextUIProvider navigate={router.push}>
       <Provider store={store}>
-        <ToastContainer />
-        <NextThemesProvider attribute="class" defaultTheme="light">
-          <div>{renderLayout()}</div>
-        </NextThemesProvider>
+        <CookiesProvider>
+          <ToastContainer />
+          <NextThemesProvider attribute="class" defaultTheme="light">
+            <div>{renderLayout()}</div>
+          </NextThemesProvider>
+        </CookiesProvider>
       </Provider>
     </NextUIProvider>
   );
