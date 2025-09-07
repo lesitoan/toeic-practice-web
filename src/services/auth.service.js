@@ -2,9 +2,9 @@ import { PREFIX_SERVICES } from '@/constants/services';
 import requestHelpers from '@/utils/requestHelper';
 
 const authServices = {
-  login: (data) => requestHelpers.post(PREFIX_SERVICES.AUTH, 'login', data),
-  logout: () => requestHelpers.post(PREFIX_SERVICES.AUTH, 'logout'),
-  register: (data) => requestHelpers.post(PREFIX_SERVICES.AUTH, 'register', data),
+  login: async (data) => requestHelpers.post(PREFIX_SERVICES.auth_service_v1, 'login', data),
+  logout: async () => requestHelpers.post(PREFIX_SERVICES.auth_service_v1, 'logout'),
+  register: async (data) => requestHelpers.post(PREFIX_SERVICES.register_service_v1, '', data),
 };
 
 export default authServices;

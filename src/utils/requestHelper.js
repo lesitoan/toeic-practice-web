@@ -1,11 +1,9 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
-
-const baseApiUrl = process.env.NEXT_PUBLIC_API;
+import { clientConfig } from '@/constants/env';
 
 const axiosInstance = axios.create({
-  baseURL: baseApiUrl,
+  baseURL: clientConfig.apiUrl,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -17,7 +15,7 @@ class RequestHelpers {
     try {
       const response = await axiosInstance.get(`${baseUrl}${url}`, {
         params,
-        paramsSerializer: (params) => parseParams(params),
+        // paramsSerializer: (params) => parseParams(params),
         headers,
       });
       return response.data;
@@ -78,16 +76,13 @@ const handleRequestError = (error, enableErrorNoti, logError) => {
     console.error('Request error:', error);
   }
   let errors = {};
-  errors.status = error.response.status;
-  errors.data = error.response.data;
+  const status = error.response?.status || 0;
+  const data = error.response?.data || { message: DEFAULT_ERROR_MESSAGE };
 
   if (logError) {
-    console.error('Status:', error.response.status);
-    console.error('Data:', error.response.data);
+    console.error('Status:', status);
+    console.error('Data:', data);
     console.error('Headers:', error.response.headers);
-  }
-  if (error.request) {
-    console.error('No response received:', error.request);
   }
   return errors;
 };
