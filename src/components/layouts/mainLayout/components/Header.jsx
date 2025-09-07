@@ -19,8 +19,10 @@ export default function Header() {
   useEffect(() => {
     if (userProfile && cookies[USER_ACCESS_TOKEN]) {
       setAvatarUrl(userProfile.avatar || '/images/default-avatar.jpg');
+    } else {
+      setAvatarUrl('');
     }
-  }, [userProfile]);
+  }, [userProfile, cookies]);
 
   return (
     <header className="sticky top-0 z-50 bg-bgPrimary shadow-sm border-b border-gray-200">
