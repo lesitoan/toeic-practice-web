@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { NAVIGATE_ITEM, WEB_TITLE } from '../constants/constants';
 import { Image, Button } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { useCookies } from 'react-cookie';
+import { USER_ACCESS_TOKEN } from '@/constants/common';
 
 // Header Component
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
+  const { userProfile } = useSelector((state) => state.mine);
+  const [cookies] = useCookies([USER_ACCESS_TOKEN]);
+  const [avatarUrl, setAvatarUrl] = useState('');
+
+  useEffect(() => {
+    if (userProfile && cookies[USER_ACCESS_TOKEN]) {
+      setAvatarUrl(userProfile.avatar || '/images/default-avatar.jpg');
+    }
+  }, [userProfile]);
 
   return (
     <header className="sticky top-0 z-50 bg-bgPrimary shadow-sm border-b border-gray-200">
@@ -37,9 +49,22 @@ export default function Header() {
 
           {/* Sign Up Button */}
 
-          <Button color="primary" onPress={() => router.push('/login')}>
-            Đăng nhập
-          </Button>
+          {avatarUrl ? (
+            <Image
+              src={avatarUrl}
+              alt="Avatar"
+              width={45}
+              height={45}
+              className="rounded-full cursor-pointer"
+              onClick={() => {
+                router.push('/profile');
+              }}
+            />
+          ) : (
+            <Button color="primary" onPress={() => router.push('/login')}>
+              Đăng nhập
+            </Button>
+          )}
 
           {/* Mobile menu button */}
           <div className="lg:hidden">
@@ -66,13 +91,26 @@ export default function Header() {
                   {item.name}
                 </Link>
               ))}
-              <Link
-                href="/dang-nhap"
-                className="bg-buttonPrimary hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium text-center transition-colors duration-200"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Đăng nhập
-              </Link>
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt="Avatar"
+                  width={45}
+                  height={45}
+                  className="rounded-full cursor-pointer"
+                  onClick={() => {
+                    router.push('/profile');
+                  }}
+                />
+              ) : (
+                <Link
+                  href="/login"
+                  className="bg-buttonPrimary hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium text-center transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Đăng nhập
+                </Link>
+              )}
             </nav>
           </div>
         )}

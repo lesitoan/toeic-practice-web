@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import MineSlice from './mineSlice';
 
 const rootReducer = {
-  mine: MineSlice,
+  mine: MineSlice.reducer,
 };
 
 const store = configureStore({

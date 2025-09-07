@@ -1,4 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import profileServices from '@/services/profile.service';
 
 const initialState = {
   accessToken: '',
@@ -8,6 +9,19 @@ const initialState = {
   isAuthenticated: false,
   error: null,
 };
+
+export const mineProfile = createAsyncThunk('mine/mineProfile', async (_, { dispatch }) => {
+  dispatch(setLoading(true));
+  try {
+    const response = await profileServices.getMe();
+    const { data } = response;
+    return data;
+  } catch (error) {
+    return error;
+  } finally {
+    dispatch(setLoading(false));
+  }
+});
 
 const mineSlice = createSlice({
   name: 'mine',
@@ -31,7 +45,12 @@ const mineSlice = createSlice({
       state.isAuthenticated = false;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(mineProfile.fulfilled, (state, action) => {
+      if (action.payload) state.userProfile = action.payload;
+    });
+  },
 });
 
 export const { setAccessToken, setRefreshToken, setUserProfile } = mineSlice.actions;
-export default mineSlice.reducer;
+export default mineSlice;
