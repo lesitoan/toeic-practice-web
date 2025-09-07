@@ -1,33 +1,59 @@
-import React, { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Eye, EyeOff, Facebook, LucideYoutube } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button, Checkbox, Input } from '@nextui-org/react';
+import { set, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import authServices from '@/services/auth.service';
+import CradleLoader from '@/components/common/Loading/CradleLoader';
 
 const SignupForm = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    agreeToTerms: false,
-  });
-
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const timeoutRef = useRef(null);
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+  const password = watch('password');
+  const agreeToTerms = watch('agreeToTerms');
+
+  const handleRegister = async (data) => {
+    setLoading(true);
+    try {
+      const res = await authServices.register({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+
+        extra_fields: { phone_number: null, address: null },
+        role_id: 2,
+      });
+      if (res) {
+        toast.success('Đăng ký tài khoản thành công!');
+        timeoutRef.current = setTimeout(() => {
+          router.push('/login');
+        }, 1500);
+      }
+    } catch (error) {
+      toast.error('Đăng ký thất bại. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-  };
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="bg-bgSecondary p-4 lg:p-6 flex flex-col justify-center min-w-[400px]">
@@ -47,83 +73,106 @@ const SignupForm = () => {
         </div>
 
         {/* Form */}
-        <div className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit(handleRegister)}>
           {/* Name Input */}
-          <Input
-            name="name"
-            placeholder="Nhập tên"
-            type="text"
-            color="primary"
-            onChange={handleInputChange}
-            classNames={{
-              base: 'h-12',
-              input: 'text-sm',
-              inputWrapper: '!h-[300px] !rounded-lg',
-            }}
-            required
-          />
-
-          {/* Email Input */}
-          <Input
-            name="email"
-            placeholder="Nhập email"
-            type="email"
-            color="primary"
-            onChange={handleInputChange}
-            classNames={{
-              base: 'h-12',
-              input: 'text-sm',
-              inputWrapper: '!h-[300px] !rounded-lg',
-            }}
-            required
-          />
-
-          {/* Password Input */}
-          <div className="relative">
+          <div>
             <Input
-              name="password"
-              placeholder="Nhập mật khẩu"
-              type={showPassword ? 'text' : 'password'}
+              name="name"
+              placeholder="Nhập tên"
+              type="text"
               color="primary"
-              onChange={handleInputChange}
               classNames={{
                 base: 'h-12',
-                input: 'text-sm',
-                inputWrapper: '!h-[300px] !rounded-lg',
+                input: `text-sm ${errors.name ? '!text-red-500 !placeholder-red-500' : ''}`,
+                inputWrapper: `!h-[300px] !rounded-lg ${errors.name && '!border-2 !border-solid !border-red-500 bg-red-100'}`,
               }}
-              required
+              {...register('name', { required: 'Tên là bắt buộc' })}
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover transition-colors duration-200"
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+            <p className="text-red-500 text-sm mt-2">{errors.name?.message}</p>
+          </div>
+
+          {/* Email Input */}
+          <div>
+            <Input
+              name="email"
+              placeholder="Nhập email"
+              type="email"
+              color="primary"
+              classNames={{
+                base: 'h-12',
+                input: `text-sm ${errors.email && '!text-red-500 !placeholder-red-500'}`,
+                inputWrapper: `!h-[300px] !rounded-lg ${errors.email && '!border-2 !border-solid !border-red-500 bg-red-100'}`,
+              }}
+              {...register('email', {
+                required: 'Email là bắt buộc',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'Email không hợp lệ',
+                },
+              })}
+            />
+            <p className="text-red-500 text-sm mt-2">{errors.email?.message}</p>
+          </div>
+
+          {/* Password Input */}
+          <div>
+            <div className="relative">
+              <Input
+                name="password"
+                placeholder="Nhập mật khẩu"
+                type={showPassword ? 'text' : 'password'}
+                color="primary"
+                classNames={{
+                  base: 'h-12',
+                  input: `text-sm ${errors.password && '!text-red-500 !placeholder-red-500'}`,
+                  inputWrapper: `!h-[300px] !rounded-lg ${errors.password && '!border-2 !border-solid !border-red-500 bg-red-100'}`,
+                }}
+                {...register('password', {
+                  required: 'Mật khẩu là bắt buộc',
+                  minLength: {
+                    value: 6,
+                    message: 'Mật khẩu phải có ít nhất 6 ký tự',
+                  },
+                })}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover transition-colors duration-200"
+              >
+                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+              </button>
+            </div>
+            <p className="text-red-500 text-sm mt-2">{errors.password?.message}</p>
           </div>
 
           {/* Confirm Password Input */}
-          <div className="relative">
-            <Input
-              name="confirmPassword"
-              placeholder="Nhập lại mật khẩu"
-              type={showConfirmPassword ? 'text' : 'password'}
-              color="primary"
-              onChange={handleInputChange}
-              classNames={{
-                base: 'h-12',
-                input: 'text-sm',
-                inputWrapper: '!h-[300px] !rounded-lg',
-              }}
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover transition-colors duration-200"
-            >
-              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+          <div>
+            <div className="relative">
+              <Input
+                name="confirmPassword"
+                placeholder="Xác nhận mật khẩu"
+                type={showConfirmPassword ? 'text' : 'password'}
+                color="primary"
+                classNames={{
+                  base: 'h-12',
+                  input: `text-sm ${errors.confirmPassword && '!text-red-500 !placeholder-red-500'}`,
+                  inputWrapper: `!h-[300px] !rounded-lg ${errors.confirmPassword && '!border-2 !border-solid !border-red-500 bg-red-100'}`,
+                }}
+                {...register('confirmPassword', {
+                  required: 'Xác nhận mật khẩu là bắt buộc',
+                  validate: (value) => value === password || 'Mật khẩu không khớp',
+                })}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover transition-colors duration-200"
+              >
+                {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+              </button>
+            </div>
+            <p className="text-red-500 text-sm mt-2">{errors.confirmPassword?.message}</p>
           </div>
 
           {/* Terms Checkbox */}
@@ -131,23 +180,26 @@ const SignupForm = () => {
             <Checkbox
               name="agreeToTerms"
               id="terms"
-              checked={formData.agreeToTerms}
-              onChange={handleInputChange}
+              checked={agreeToTerms || false}
               className=""
+              {...register('agreeToTerms', { required: true })}
             />
-            <label htmlFor="terms" className="text-gray-500 text-sm leading-relaxed">
-              Đòng ý với tất cả các điều khoản
+            <label
+              htmlFor="terms"
+              className={`text-sm ${errors.agreeToTerms ? 'text-red-500' : 'text-gray-500'}`}
+            >
+              Đồng ý với tất cả các điều khoản
             </label>
           </div>
 
           {/* Submit Button */}
           <Button
             color="primary"
-            className={`w-full rounded-lg h-12 shadow-md ${formData.agreeToTerms ? '' : 'opacity-70 !cursor-not-allowed'} cursor-pointer`}
+            className={`w-full rounded-lg h-12 shadow-md ${agreeToTerms ? '' : 'opacity-70 !cursor-not-allowed'} cursor-pointer`}
             type="submit"
-            disabled={!formData.agreeToTerms}
+            disabled={loading}
           >
-            Tạo tài khoản
+            {!loading ? 'Đăng ký' : <CradleLoader size={'md'} color="#ffffff" />}
           </Button>
 
           {/* Divider */}
@@ -166,7 +218,7 @@ const SignupForm = () => {
               color="default"
               className="w-full rounded-lg h-12 shadow-md cursor-pointer bg-orange-400"
               type="submit"
-              disabled={!formData.agreeToTerms}
+              disabled={!agreeToTerms}
             >
               Google
             </Button>
@@ -175,13 +227,13 @@ const SignupForm = () => {
               color="primary"
               className="w-full rounded-lg h-12 shadow-md cursor-pointer"
               type="submit"
-              disabled={!formData.agreeToTerms}
+              disabled={!agreeToTerms}
             >
               <Facebook size={20} />
               Facebook
             </Button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
