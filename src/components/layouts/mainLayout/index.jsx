@@ -18,6 +18,8 @@ export default function MainLayout({ children }) {
 
   useEffect(() => {
     const checkAuth = async () => {
+      const result = await dispatch(mineProfile());
+
       const matched = PROTECTED_ROUTES.find((r) => r.pathRegex.test(pathname));
       if (!matched) return;
 
@@ -28,8 +30,6 @@ export default function MainLayout({ children }) {
       }
 
       requestHelpers.setAuthorizationToken(token);
-      const result = await dispatch(mineProfile());
-
       const role = result.payload?.role || userProfile?.role;
       if (!role) {
         router.push('/login');

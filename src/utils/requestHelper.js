@@ -2,6 +2,8 @@ import axios from 'axios';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { clientConfig } from '@/constants/env';
 
+const isLogError = clientConfig.nodeEnv === 'development';
+
 const axiosInstance = axios.create({
   baseURL: clientConfig.apiUrl,
   headers: {
@@ -11,7 +13,7 @@ const axiosInstance = axios.create({
 });
 
 class RequestHelpers {
-  async get(baseUrl, url, params, enableErrorNoti = false, logError = true, headers = {}) {
+  async get(baseUrl, url, params, enableErrorNoti = false, logError = isLogError, headers = {}) {
     try {
       const response = await axiosInstance.get(`${baseUrl}${url}`, {
         params,
@@ -82,7 +84,7 @@ const handleRequestError = (error, enableErrorNoti, logError) => {
   if (logError) {
     console.error('Status:', status);
     console.error('Data:', data);
-    console.error('Headers:', error.response.headers);
+    console.error('Headers:', error?.response?.headers);
   }
   return errors;
 };

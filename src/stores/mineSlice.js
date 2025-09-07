@@ -52,5 +52,6 @@ const mineSlice = createSlice({
   },
 });
 
-export const { setAccessToken, setRefreshToken, setUserProfile } = mineSlice.actions;
+export const { setAccessToken, setRefreshToken, setUserProfile, setLoading, logout } =
+  mineSlice.actions;
 export default mineSlice;
