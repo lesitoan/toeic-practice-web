@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import profileServices from '@/services/profile.service';
+import { showErrorMessage } from '@/utils/common';
 
 const initialState = {
   accessToken: '',
@@ -17,7 +18,7 @@ export const mineProfile = createAsyncThunk('mine/mineProfile', async (_, { disp
     const { data } = response;
     return data;
   } catch (error) {
-    return error;
+    showErrorMessage(error.message);
   } finally {
     dispatch(setLoading(false));
   }
