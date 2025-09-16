@@ -120,7 +120,7 @@ export default function ProfilePopup({ isOpen, setIsOpen, userProfile }) {
                   handleLogout();
                   setIsOpen(false);
                 }}
-                className="!text-red-700 hover:bg-red-200"
+                className="!text-red-700 hover:bg-red-200 rounded-md"
               />
             </div>
           </div>

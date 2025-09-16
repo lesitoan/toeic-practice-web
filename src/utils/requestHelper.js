@@ -13,6 +13,10 @@ const axiosInstance = axios.create({
 });
 
 class RequestHelpers {
+  constructor() {
+    this.interceptorId = null;
+  }
+
   async get(baseUrl, url, params, enableErrorNoti = false, logError = isLogError, headers = {}) {
     try {
       const response = await axiosInstance.get(`${baseUrl}${url}`, {
@@ -63,7 +67,10 @@ class RequestHelpers {
   }
 
   setAuthorizationToken(token) {
-    axiosInstance.interceptors.request.use(function (config) {
+    if (this.interceptorId !== null) {
+      axiosInstance.interceptors.request.eject(this.interceptorId);
+    }
+    this.interceptorId = axiosInstance.interceptors.request.use(function (config) {
       config.headers = {
         ...config.headers,
         Authorization: token ? `Bearer ${token}` : '',
