@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import profileServices from '@/services/profile.service';
+import { showErrorMessage } from '@/utils/common';
+import { ROLE } from '@/constants/common';
 
 const initialState = {
   accessToken: '',
@@ -13,11 +15,10 @@ const initialState = {
 export const mineProfile = createAsyncThunk('mine/mineProfile', async (_, { dispatch }) => {
   dispatch(setLoading(true));
   try {
-    const response = await profileServices.getMe();
-    const { data } = response;
+    const data = await profileServices.getMe();
     return data;
   } catch (error) {
-    return error;
+    showErrorMessage(error.message);
   } finally {
     dispatch(setLoading(false));
   }
@@ -43,11 +44,21 @@ const mineSlice = createSlice({
       state.accessToken = '';
       state.refreshToken = '';
       state.isAuthenticated = false;
+      state.userProfile = null;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(mineProfile.fulfilled, (state, action) => {
-      if (action.payload) state.userProfile = action.payload;
+      // match role
+      if (action.payload?.role_id === 3) {
+        action.payload.role = ROLE.USER_FREE;
+      } else if (action.payload?.role_id === 2) {
+        action.payload.role = ROLE.USER_PRO;
+      }
+      if (action.payload) {
+        state.userProfile = action.payload;
+        state.isAuthenticated = true;
+      }
     });
   },
 });
