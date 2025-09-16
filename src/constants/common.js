@@ -14,5 +14,5 @@ export const PROTECTED_ROUTES = [
   { pathRegex: /^\/tests\/.+$/, roles: [ROLE.USER_FREE, ROLE.USER_PRO] },
   { pathRegex: /^\/profile(\/.*)?$/, roles: [ROLE.USER_FREE, ROLE.USER_PRO] },
   { pathRegex: /^\/vocabulary(\/.*)?$/, roles: [ROLE.USER_PRO] },
-  { pathRegex: /^\/flashcards(\/.*)?$/, roles: [ROLE.USER_FREE, ROLE.USER_PRO] },
+  { pathRegex: /^\/flashcards(\/.*)?$/, roles: [ROLE.USER_PRO] },
 ];

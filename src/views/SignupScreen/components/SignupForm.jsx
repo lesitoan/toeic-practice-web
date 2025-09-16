@@ -30,9 +30,6 @@ const SignupForm = () => {
         name: data.name,
         email: data.email,
         password: data.password,
-
-        extra_fields: { phone_number: null, address: null },
-        role_id: 2,
       });
       if (res) {
         toast.success('Đăng ký tài khoản thành công!');

@@ -18,7 +18,9 @@ export default function Header() {
 
   useEffect(() => {
     if (userProfile && cookies[USER_ACCESS_TOKEN]) {
-      setAvatarUrl(userProfile.avatar || '/images/default-avatar.jpg');
+      const avatar = userProfile.avatar;
+      const regex = /^(https?:\/\/[^\s]+|\/[^\s]+)/i;
+      setAvatarUrl(avatar && regex.test(avatar) ? avatar : '/images/default-avatar.jpg');
     } else {
       setAvatarUrl('');
     }

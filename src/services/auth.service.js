@@ -4,7 +4,8 @@ import requestHelpers from '@/utils/requestHelper';
 const authServices = {
   login: async (data) => requestHelpers.post(PREFIX_SERVICES.auth_service_v1, '/login', data),
   logout: async () => requestHelpers.post(PREFIX_SERVICES.auth_service_v1, '/logout'),
-  register: async (data) => requestHelpers.post(PREFIX_SERVICES.register_service_v1, '', data),
+  register: async (data) =>
+    requestHelpers.post(PREFIX_SERVICES.register_service_v1, '/student', data),
 };
 
 export default authServices;

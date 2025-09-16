@@ -74,19 +74,18 @@ class RequestHelpers {
 }
 
 const handleRequestError = (error, enableErrorNoti, logError) => {
-  if (logError) {
-    console.error('Request error:', error);
-  }
-  let errors = {};
-  const status = error.response?.status || 0;
-  const data = error.response?.data || { message: DEFAULT_ERROR_MESSAGE };
-
-  if (logError) {
-    console.error('Status:', status);
-    console.error('Data:', data);
-    console.error('Headers:', error?.response?.headers);
-  }
-  return errors;
+  // if (logError) {
+  //   console.error('Request error:', error);
+  // }
+  // let errors = {};
+  // const status = error.response?.status || 0;
+  // const data = error.response?.data || { message: DEFAULT_ERROR_MESSAGE };
+  // if (logError) {
+  //   console.error('Status:', status);
+  //   console.error('Data:', data);
+  //   console.error('Headers:', error?.response?.headers);
+  // }
+  // return errors;
 };
 
 export default new RequestHelpers();
