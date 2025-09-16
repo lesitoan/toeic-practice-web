@@ -44,6 +44,7 @@ const mineSlice = createSlice({
       state.accessToken = '';
       state.refreshToken = '';
       state.isAuthenticated = false;
+      state.userProfile = null;
     },
   },
   extraReducers: (builder) => {

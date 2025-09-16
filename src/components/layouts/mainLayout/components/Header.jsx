@@ -7,10 +7,12 @@ import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useCookies } from 'react-cookie';
 import { USER_ACCESS_TOKEN } from '@/constants/common';
+import ProfilePopup from '@/components/common/ProfilePopup';
 
 // Header Component
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showProfilePopup, setShowProfilePopup] = useState(false);
   const router = useRouter();
   const { userProfile } = useSelector((state) => state.mine);
   const [cookies] = useCookies([USER_ACCESS_TOKEN]);
@@ -53,22 +55,29 @@ export default function Header() {
 
           {/* Sign Up Button */}
 
-          {avatarUrl ? (
-            <Image
-              src={avatarUrl}
-              alt="Avatar"
-              width={45}
-              height={45}
-              className="rounded-full cursor-pointer"
-              onClick={() => {
-                router.push('/profile');
-              }}
+          <div>
+            {avatarUrl ? (
+              <Image
+                src={avatarUrl}
+                alt="Avatar"
+                width={45}
+                height={45}
+                className="rounded-full cursor-pointer"
+                onClick={() => {
+                  setShowProfilePopup(!showProfilePopup);
+                }}
+              />
+            ) : (
+              <Button color="primary" onPress={() => router.push('/login')}>
+                Đăng nhập
+              </Button>
+            )}
+            <ProfilePopup
+              isOpen={showProfilePopup}
+              setIsOpen={setShowProfilePopup}
+              userProfile={userProfile}
             />
-          ) : (
-            <Button color="primary" onPress={() => router.push('/login')}>
-              Đăng nhập
-            </Button>
-          )}
+          </div>
 
           {/* Mobile menu button */}
           <div className="lg:hidden">
