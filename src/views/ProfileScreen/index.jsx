@@ -1,5 +1,8 @@
 'use client';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Button } from '@nextui-org/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Overview from './components/Overview';
 import Progress from './components/Progress';
 import Achievements from './components/Achievements';
@@ -8,12 +11,16 @@ import SettingComponent from './components/SettingComponent';
 import UserInfo from './components/UserInfo';
 import BannerPro from './components/BannerPro';
 import { PERSONAL_INFO, TABS } from './constants';
-import { Button } from '@nextui-org/react';
+import { ROLE } from '@/constants/common';
 
 const ProfilePage = () => {
-  const [activeTab, setActiveTab] = useState(TABS[0].id);
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [personalInfo, setPersonalInfo] = useState(PERSONAL_INFO);
   const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
+  const { userProfile } = useSelector((state) => state.mine);
+
+  const activeTab = searchParams.get('tab') || TABS[0].id;
 
   const renderTab = () => {
     switch (activeTab) {
@@ -44,13 +51,13 @@ const ProfilePage = () => {
       <UserInfo />
 
       <div className="bg-bgSecondary shadow-lg rounded-lg mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <BannerPro />
+        {userProfile?.role === ROLE.USER_FREE && <BannerPro />}
 
         <div className="flex space-x-2 mb-8 bg-gray-100 p-1 rounded-lg w-fit">
           {TABS.map((tab) => (
             <Button
               key={tab.id}
-              onPress={() => setActiveTab(tab.id)}
+              onPress={() => router.push(`/profile?tab=${tab.id}`)}
               className={`min-w-[150px] font-medium rounded-lg transition-all duration-200 ${
                 activeTab === tab.id
                   ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'

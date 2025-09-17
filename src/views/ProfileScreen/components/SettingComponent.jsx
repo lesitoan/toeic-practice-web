@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, Lock, Eye, EyeOff, Save, CheckCircle, AlertCircle } from 'lucide-react';
+import ChangeProfileForm from './changeUserProfileForm/ChangeProfileForm';
 
 const SettingComponent = ({ personalInfo, setPersonalInfo, saveStatus, setSaveStatus }) => {
   const [showOldPassword, setShowOldPassword] = useState(false);
@@ -10,13 +11,6 @@ const SettingComponent = ({ personalInfo, setPersonalInfo, saveStatus, setSaveSt
     newPassword: '',
     confirmPassword: '',
   });
-
-  // Handle form submissions
-  const handlePersonalInfoSubmit = (e) => {
-    e.preventDefault();
-    setSaveStatus({ type: 'success', message: 'Thông tin cá nhân đã được cập nhật thành công!' });
-    setTimeout(() => setSaveStatus({ type: '', message: '' }), 3000);
-  };
 
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
@@ -53,101 +47,7 @@ const SettingComponent = ({ personalInfo, setPersonalInfo, saveStatus, setSaveSt
         </div>
       )}
 
-      {/* Personal Information */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <div className="flex items-center gap-3 mb-6">
-          <User className="w-6 h-6 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Thông tin cá nhân</h3>
-        </div>
-
-        <form onSubmit={handlePersonalInfoSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Họ và tên *</label>
-              <input
-                type="text"
-                value={personalInfo.name}
-                onChange={(e) => setPersonalInfo({ ...personalInfo, name: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="Nhập họ và tên"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-              <input
-                type="email"
-                value={personalInfo.email}
-                onChange={(e) => setPersonalInfo({ ...personalInfo, email: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="Nhập email"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
-              <input
-                type="tel"
-                value={personalInfo.phone}
-                onChange={(e) => setPersonalInfo({ ...personalInfo, phone: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="Nhập số điện thoại"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ngày sinh</label>
-              <input
-                type="date"
-                value={personalInfo.birthDate}
-                onChange={(e) => setPersonalInfo({ ...personalInfo, birthDate: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Địa chỉ</label>
-              <input
-                type="text"
-                value={personalInfo.address}
-                onChange={(e) => setPersonalInfo({ ...personalInfo, address: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="Nhập địa chỉ"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Mục tiêu điểm TOEIC
-              </label>
-              <select
-                value={personalInfo.targetScore}
-                onChange={(e) => setPersonalInfo({ ...personalInfo, targetScore: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              >
-                <option value="600">600 điểm</option>
-                <option value="700">700 điểm</option>
-                <option value="800">800 điểm</option>
-                <option value="850">850 điểm</option>
-                <option value="900">900 điểm</option>
-                <option value="990">990 điểm</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              <Save className="w-5 h-5" />
-              Lưu thay đổi
-            </button>
-          </div>
-        </form>
-      </div>
+      <ChangeProfileForm />
 
       {/* Change Password */}
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
