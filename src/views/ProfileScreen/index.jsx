@@ -1,5 +1,4 @@
 'use client';
-import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from '@nextui-org/react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -10,14 +9,12 @@ import Activity from './components/Activity';
 import SettingComponent from './components/SettingComponent';
 import UserInfo from './components/UserInfo';
 import BannerPro from './components/BannerPro';
-import { PERSONAL_INFO, TABS } from './constants';
+import { TABS } from './constants';
 import { ROLE } from '@/constants/common';
 
 const ProfilePage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [personalInfo, setPersonalInfo] = useState(PERSONAL_INFO);
-  const [saveStatus, setSaveStatus] = useState({ type: '', message: '' });
   const { userProfile } = useSelector((state) => state.mine);
 
   const activeTab = searchParams.get('tab') || TABS[0].id;
@@ -33,14 +30,7 @@ const ProfilePage = () => {
       case 'activity':
         return <Activity />;
       case 'settings':
-        return (
-          <SettingComponent
-            personalInfo={personalInfo}
-            setPersonalInfo={setPersonalInfo}
-            saveStatus={saveStatus}
-            setSaveStatus={setSaveStatus}
-          />
-        );
+        return <SettingComponent />;
       default:
         return null;
     }
