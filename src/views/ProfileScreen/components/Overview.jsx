@@ -18,7 +18,7 @@ const StatCard = ({ stat }) => (
       </div>
       <TrendingUp className="w-5 h-5 text-green-500" />
     </div>
-    <h3 className="text-2xl font-bold text-gray-900 mb-1">{stat.value.toLocaleString()}</h3>
+    <h3 className="text-2xl font-bold text-gray-900 mb-1">{stat.value.toString()}</h3>
     <p className="text-gray-600 text-sm">{stat.label}</p>
   </div>
 );
