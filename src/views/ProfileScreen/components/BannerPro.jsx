@@ -1,4 +1,5 @@
 import { Crown } from 'lucide-react';
+import Link from 'next/link';
 
 export default function BannerPro() {
   return (
@@ -15,12 +16,12 @@ export default function BannerPro() {
             <p className="text-purple-100">Unlimited tests, advanced analytics, và nhiều hơn nữa</p>
           </div>
         </div>
-        <button
-          onClick={() => setIsPro(true)}
+        <Link
+          href="/pricing"
           className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
         >
           Nâng cấp ngay
-        </button>
+        </Link>
       </div>
     </div>
   );

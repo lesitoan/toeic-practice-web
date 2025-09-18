@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { useCookies } from 'react-cookie';
 import { USER_ACCESS_TOKEN } from '@/constants/common';
 import ProfilePopup from '@/components/common/ProfilePopup';
+import { getAvartarUrl } from '@/utils/common';
 
 // Header Component
 export default function Header() {
@@ -20,9 +21,7 @@ export default function Header() {
 
   useEffect(() => {
     if (userProfile && cookies[USER_ACCESS_TOKEN]) {
-      const avatar = userProfile.avatar;
-      const regex = /^(https?:\/\/[^\s]+|\/[^\s]+)/i;
-      setAvatarUrl(avatar && regex.test(avatar) ? avatar : '/images/default-avatar.jpg');
+      setAvatarUrl(getAvartarUrl(userProfile.avatar));
     } else {
       setAvatarUrl('');
     }

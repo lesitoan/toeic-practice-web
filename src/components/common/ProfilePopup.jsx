@@ -8,6 +8,7 @@ import { useCookies } from 'react-cookie';
 import requestHelpers from '@/utils/requestHelper';
 import { useDispatch } from 'react-redux';
 import { logout } from '@/stores/mineSlice';
+import { getAvartarUrl } from '@/utils/common';
 
 export default function ProfilePopup({ isOpen, setIsOpen, userProfile }) {
   const dispatch = useDispatch();
@@ -24,11 +25,6 @@ export default function ProfilePopup({ isOpen, setIsOpen, userProfile }) {
 
   if (!userProfile) return null;
 
-  let avatar = userProfile.avatar;
-  if (!userProfile.avatar || /^(https?:\/\/[^\s]+|\/[^\s]+)/i.test(userProfile.avatar) === false) {
-    avatar = '/images/default-avatar.jpg';
-  }
-
   return (
     <div className="relative">
       {isOpen && (
@@ -42,7 +38,7 @@ export default function ProfilePopup({ isOpen, setIsOpen, userProfile }) {
               <div className="flex items-center space-x-4">
                 <div className="relative">
                   <img
-                    src={avatar}
+                    src={getAvartarUrl(userProfile.avatar)}
                     alt="Profile"
                     className="w-16 h-16 rounded-full border-3 border-white shadow-lg"
                   />
@@ -90,7 +86,7 @@ export default function ProfilePopup({ isOpen, setIsOpen, userProfile }) {
                 icon={<User className="w-5 h-5" />}
                 text="Hồ sơ cá nhân"
                 onClick={() => {
-                  router.push('/profile');
+                  router.push('/profile?tab=overview');
                   setIsOpen(false);
                 }}
               />
@@ -106,7 +102,7 @@ export default function ProfilePopup({ isOpen, setIsOpen, userProfile }) {
                 icon={<Settings className="w-5 h-5" />}
                 text="Cài đặt"
                 onClick={() => {
-                  router.push('/profile');
+                  router.push('/profile?tab=settings');
                   setIsOpen(false);
                 }}
               />
@@ -120,7 +116,7 @@ export default function ProfilePopup({ isOpen, setIsOpen, userProfile }) {
                   handleLogout();
                   setIsOpen(false);
                 }}
-                className="!text-red-700 hover:bg-red-200"
+                className="!text-red-700 hover:bg-red-200 rounded-md"
               />
             </div>
           </div>

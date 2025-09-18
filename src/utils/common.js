@@ -5,3 +5,11 @@ export const showErrorMessage = (message) => {
     console.error('Error from custom handler: ', message);
   }
 };
+
+export const getAvartarUrl = (avatarUrl) => {
+  const regex = /^(https?:\/\/[^\s]+|\/[^\s]+)/i;
+  if (!avatarUrl || regex.test(avatarUrl) === false) {
+    avatarUrl = '/images/default-avatar.jpg';
+  }
+  return avatarUrl;
+};
