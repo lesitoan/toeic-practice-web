@@ -15,7 +15,14 @@ const initialState = {
 export const mineProfile = createAsyncThunk('mine/mineProfile', async (_, { dispatch }) => {
   dispatch(setLoading(true));
   try {
-    const data = await profileServices.getMe();
+    // const data = await profileServices.getMe();
+    // Mock data
+    const data = {
+      id: 1,
+      role_id: 2,
+      username: 'john_doe',
+      email: 'john_doe@example.com',
+    };
     return data;
   } catch (error) {
     showErrorMessage(error.message);
