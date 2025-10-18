@@ -1,30 +1,38 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { vocabularyCategories } from '../../constants';
+import { useSearchParams } from 'next/navigation';
+import QR from 'query-string';
 import FilterCourse from './FilterCourse';
 import CourseCard from './CourseCard';
-import { fetchDefaultCollections } from '@/stores/collectionSlice';
+import { fetchCollections } from '@/stores/collectionSlice';
 import { CourseCardSkeleton } from '@/components/Skeletons/courseCardskeleton';
+import { COLLECTION_FILTERS } from '../../constants';
 
 export default function VocabularyCoursesSection() {
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
   const [viewMode, setViewMode] = useState('grid');
-  const [searchQuery, setSearchQuery] = useState('');
-  const defaultCollections = useSelector((state) => state.collection.defaultCollections);
+  const { collections, loading, error } = useSelector((state) => state.collection);
+  const [filter, setFilter] = useState({});
+
+  const queryString = useMemo(() => {
+    return {
+      search: searchParams.get('search') || '',
+      type: searchParams.get('type') || COLLECTION_FILTERS[0].value,
+    };
+  }, [searchParams]);
 
   useEffect(() => {
-    dispatch(fetchDefaultCollections());
-  }, [dispatch]);
+    setFilter(QR.parse(QR.stringify(queryString), { arrayFormat: 'comma' }));
+  }, [queryString]);
 
-  const filteredCategories = vocabularyCategories.filter(
-    (category) =>
-      category.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      category.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    dispatch(fetchCollections(filter));
+  }, [dispatch, filter]);
 
   return (
     <div>
-      <FilterCourse searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <FilterCourse filter={filter} setFilter={setFilter} />
       {/* <div className="flex justify-end mb-4">
         <button
           onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
@@ -34,12 +42,12 @@ export default function VocabularyCoursesSection() {
         </button>
       </div> */}
       <div className={viewMode === 'grid' ? 'grid md:grid-cols-2 gap-6' : 'space-y-4'}>
-        {defaultCollections && defaultCollections.length > 0 ? (
-          defaultCollections.map((collection) => (
+        {loading ? (
+          <CourseCardSkeleton count={4} />
+        ) : (
+          collections.map((collection) => (
             <CourseCard key={collection.id} collection={collection} viewMode={viewMode} />
           ))
-        ) : (
-          <CourseCardSkeleton count={4} />
         )}
       </div>
     </div>

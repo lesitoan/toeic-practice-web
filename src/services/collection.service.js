@@ -8,11 +8,8 @@ const collectionServices = {
     requestHelpers.put(`${PREFIX_SERVICES.collection_service_v1}/${id}`, data), // chưa có
   deleteCollection: async (id) =>
     requestHelpers.delete(`${PREFIX_SERVICES.collection_service_v1}/${id}`), // chưa có
-  getMyCollections: async (params) =>
+  getCollections: async (params) =>
     requestHelpers.get(PREFIX_SERVICES.collection_service_v1, '', { params }), // chưa có
-
-  getDefaultCollections: async () =>
-    requestHelpers.get(PREFIX_SERVICES.collection_service_v1, '/default'), // chưa có
 };
 
 export default collectionServices;

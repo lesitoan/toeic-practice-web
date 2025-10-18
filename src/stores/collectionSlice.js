@@ -3,8 +3,7 @@ import collectionServices from '@/services/collection.service';
 import { showErrorMessage } from '@/utils/common';
 
 const initialState = {
-  defaultCollections: [],
-  myCollections: [],
+  collections: [],
   selectedCollectionId: null,
   filter: {
     page: 1,
@@ -14,21 +13,22 @@ const initialState = {
   error: null,
 };
 
-export const fetchDefaultCollections = createAsyncThunk(
-  'collection/fetchDefaultCollections',
+export const fetchCollections = createAsyncThunk(
+  'collection/fetchCollections',
   async (params, { dispatch }) => {
-    dispatch(setLoading(true));
     try {
-      // const data = await collectionServices.getDefaultCollections(params);
-
+      // const data = await collectionServices.getCollections(params);
       // mock data
-      const data = [
+      const { type, search } = params || {};
+      const fakeData = [
         {
           id: 1,
           name: 'Bộ từ vựng 1',
           level: 'Cơ bản',
           wordCount: 100,
           description: 'Mô tả bộ từ vựng 1',
+          type: 'featured',
+          isFavorite: true,
         },
         {
           id: 2,
@@ -36,6 +36,8 @@ export const fetchDefaultCollections = createAsyncThunk(
           level: 'Cơ bản',
           wordCount: 120,
           description: 'Mô tả bộ từ vựng 2',
+          type: 'featured',
+          isFavorite: false,
         },
         {
           id: 3,
@@ -43,6 +45,8 @@ export const fetchDefaultCollections = createAsyncThunk(
           level: 'Cơ bản',
           wordCount: 80,
           description: 'Mô tả bộ từ vựng 3',
+          type: 'featured',
+          isFavorite: true,
         },
         {
           id: 4,
@@ -50,36 +54,31 @@ export const fetchDefaultCollections = createAsyncThunk(
           level: 'Cơ bản',
           wordCount: 150,
           description: 'Mô tả bộ từ vựng 4',
+          type: 'featured',
+          isFavorite: false,
+        },
+        {
+          id: 5,
+          name: 'bộ từ vựng của tôi',
+          level: 'Cơ bản',
+          wordCount: 200,
+          description: 'Mô tả bộ từ vựng 5',
+          type: 'created',
+          isFavorite: true,
         },
       ];
-      return data;
-    } catch (error) {
-      showErrorMessage(error.message);
-    } finally {
-      dispatch(setLoading(false));
-    }
-  }
-);
+      let data = fakeData;
+      if (type) {
+        data = data.filter((item) => item.type === type);
+      }
+      if (search) {
+        data = data.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
+      }
+      await new Promise((r) => setTimeout(r, 1500));
 
-export const fetchMyCollections = createAsyncThunk(
-  'vocabulary/fetchMyCollections',
-  async (_, { dispatch }) => {
-    dispatch(setLoading(true));
-    try {
-      //   const data = await vocabularyServices.getMyCollections();
-      // mock data
-      const data = [
-        { id: 11, name: 'Bộ từ vựng cá nhân 11', description: 'Mô tả bộ từ vựng cá nhân 11' },
-        { id: 12, name: 'Bộ từ vựng cá nhân 22', description: 'Mô tả bộ từ vựng cá nhân 22' },
-        { id: 33, name: 'Bộ từ vựng cá nhân 33', description: 'Mô tả bộ từ vựng cá nhân 33' },
-        { id: 44, name: 'Bộ từ vựng cá nhân 44', description: 'Mô tả bộ từ vựng cá nhân 44' },
-        { id: 55, name: 'Bộ từ vựng cá nhân 55', description: 'Mô tả bộ từ vựng cá nhân 55' },
-      ];
       return data;
     } catch (error) {
       showErrorMessage(error.message);
-    } finally {
-      dispatch(setLoading(false));
     }
   }
 );
@@ -102,16 +101,19 @@ const collectionSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchMyCollections.fulfilled, (state, action) => {
-      if (action.payload) {
-        state.myCollections = action.payload;
-      }
-    });
-    builder.addCase(fetchDefaultCollections.fulfilled, (state, action) => {
-      if (action.payload) {
-        state.defaultCollections = action.payload;
-      }
-    });
+    builder
+      .addCase(fetchCollections.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCollections.fulfilled, (state, action) => {
+        state.loading = false;
+        state.collections = action.payload || [];
+      })
+      .addCase(fetchCollections.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message || 'Lỗi tải dữ liệu';
+      });
   },
 });
 
