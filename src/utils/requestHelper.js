@@ -93,6 +93,7 @@ const handleRequestError = (error, enableErrorNoti, logError) => {
   //   console.error('Headers:', error?.response?.headers);
   // }
   // return errors;
+  return error;
 };
 
 export default new RequestHelpers();
