@@ -13,21 +13,11 @@ const initialState = {
 };
 
 export const mineProfile = createAsyncThunk('mine/mineProfile', async (_, { dispatch }) => {
-  dispatch(setLoading(true));
   try {
-    // const data = await profileServices.getMe();
-    // Mock data
-    const data = {
-      id: 1,
-      role_id: 2,
-      username: 'john_doe',
-      email: 'john_doe@example.com',
-    };
+    const data = await profileServices.getMe();
     return data;
   } catch (error) {
     showErrorMessage(error.message);
-  } finally {
-    dispatch(setLoading(false));
   }
 });
 
@@ -55,18 +45,29 @@ const mineSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(mineProfile.fulfilled, (state, action) => {
-      // match role
-      if (action.payload?.role_id === 3) {
-        action.payload.role = ROLE.USER_FREE;
-      } else if (action.payload?.role_id === 2) {
+    builder
+      .addCase(mineProfile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(mineProfile.rejected, (state) => {
+        state.loading = false;
+      })
+      .addCase(mineProfile.fulfilled, (state, action) => {
+        // match role
+        // if (action.payload?.role_id === 3) {
+        //   action.payload.role = ROLE.USER_FREE;
+        // } else if (action.payload?.role_id === 2) {
+        //   action.payload.role = ROLE.USER_PRO;
+        // }
+
+        // fake role pro
         action.payload.role = ROLE.USER_PRO;
-      }
-      if (action.payload) {
-        state.userProfile = action.payload;
-        state.isAuthenticated = true;
-      }
-    });
+
+        if (action.payload) {
+          state.userProfile = action.payload;
+          state.isAuthenticated = true;
+        }
+      });
   },
 });
 
