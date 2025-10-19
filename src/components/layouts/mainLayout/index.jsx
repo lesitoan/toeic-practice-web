@@ -7,7 +7,7 @@ import { PROTECTED_ROUTES, USER_ACCESS_TOKEN } from '@/constants/common';
 import { useSelector, useDispatch } from 'react-redux';
 import requestHelpers from '@/utils/requestHelper';
 import { mineProfile } from '@/stores/mineSlice';
-import UpgradePopup from '@/components/common/UpgradePopup';
+import UpgradePopup from '@/components/popup/UpgradePopup';
 
 export default function MainLayout({ children }) {
   const pathname = usePathname();

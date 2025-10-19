@@ -6,6 +6,7 @@ import { set, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import authServices from '@/services/auth.service';
 import CradleLoader from '@/components/common/Loading/CradleLoader';
+import PopupRegisterSuccess from '@/components/popup/PopupRegisterSuccess';
 
 const SignupForm = () => {
   const router = useRouter();
@@ -16,11 +17,13 @@ const SignupForm = () => {
     watch,
   } = useForm();
   const [showPassword, setShowPassword] = useState(false);
+  const [openPopupSuccess, setOpenPopupSuccess] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const timeoutRef = useRef(null);
 
   const password = watch('password');
+  const email = watch('email');
   const agreeToTerms = watch('agreeToTerms');
 
   const handleRegister = async (data) => {
@@ -33,9 +36,10 @@ const SignupForm = () => {
       });
       if (res) {
         toast.success('Đăng ký tài khoản thành công!');
-        timeoutRef.current = setTimeout(() => {
-          router.push('/login');
-        }, 1500);
+        // timeoutRef.current = setTimeout(() => {
+        //   router.push('/login');
+        // }, 1500);
+        setOpenPopupSuccess(true);
       }
     } catch (error) {
       toast.error('Đăng ký thất bại. Vui lòng thử lại.');
@@ -232,6 +236,12 @@ const SignupForm = () => {
           </div>
         </form>
       </div>
+
+      <PopupRegisterSuccess
+        isOpen={openPopupSuccess}
+        onClose={() => setOpenPopupSuccess(false)}
+        email={email}
+      />
     </div>
   );
 };
