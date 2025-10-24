@@ -4,7 +4,7 @@ import { showErrorMessage } from '@/utils/common';
 
 const initialState = {
   collections: [],
-  selectedCollectionId: null,
+  selectedCollection: null,
   filter: {
     page: 1,
     pageSize: 10,
@@ -17,65 +17,19 @@ export const fetchCollections = createAsyncThunk(
   'collection/fetchCollections',
   async (params, { dispatch }) => {
     try {
-      // const data = await collectionServices.getCollections(params);
-      // mock data
-      const { type, search } = params || {};
-      const fakeData = [
-        {
-          id: 1,
-          name: 'Bộ từ vựng 1',
-          level: 'Cơ bản',
-          wordCount: 100,
-          description: 'Mô tả bộ từ vựng 1',
-          type: 'featured',
-          isFavorite: true,
-        },
-        {
-          id: 2,
-          name: 'Bộ từ vựng 2',
-          level: 'Cơ bản',
-          wordCount: 120,
-          description: 'Mô tả bộ từ vựng 2',
-          type: 'featured',
-          isFavorite: false,
-        },
-        {
-          id: 3,
-          name: 'Bộ từ vựng 3',
-          level: 'Cơ bản',
-          wordCount: 80,
-          description: 'Mô tả bộ từ vựng 3',
-          type: 'featured',
-          isFavorite: true,
-        },
-        {
-          id: 4,
-          name: 'Bộ từ vựng 4',
-          level: 'Cơ bản',
-          wordCount: 150,
-          description: 'Mô tả bộ từ vựng 4',
-          type: 'featured',
-          isFavorite: false,
-        },
-        {
-          id: 5,
-          name: 'bộ từ vựng của tôi',
-          level: 'Cơ bản',
-          wordCount: 200,
-          description: 'Mô tả bộ từ vựng 5',
-          type: 'created',
-          isFavorite: true,
-        },
-      ];
-      let data = fakeData;
-      if (type) {
-        data = data.filter((item) => item.type === type);
-      }
-      if (search) {
-        data = data.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
-      }
-      await new Promise((r) => setTimeout(r, 1500));
+      const data = await collectionServices.getCollections(params);
+      return data;
+    } catch (error) {
+      showErrorMessage(error.message);
+    }
+  }
+);
 
+export const fetchCollectionById = createAsyncThunk(
+  'collection/fetchCollectionById',
+  async (id, { dispatch }) => {
+    try {
+      const data = await collectionServices.getCollectionById(id);
       return data;
     } catch (error) {
       showErrorMessage(error.message);
@@ -96,8 +50,8 @@ const collectionSlice = createSlice({
     setFilter: (state, action) => {
       state.filter = { ...state.filter, ...action.payload };
     },
-    setSelectedCollectionId: (state, action) => {
-      state.selectedCollectionId = action.payload;
+    setSelectedCollection: (state, action) => {
+      state.selectedCollection = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -114,8 +68,21 @@ const collectionSlice = createSlice({
         state.loading = false;
         state.error = action.error?.message || 'Lỗi tải dữ liệu';
       });
+
+    builder
+      .addCase(fetchCollectionById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchCollectionById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedCollection = action.payload || null;
+      })
+      .addCase(fetchCollectionById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message || 'Lỗi tải dữ liệu';
+      });
   },
 });
 
-export const { setLoading, setError, setFilter, setSelectedCollectionId } = collectionSlice.actions;
+export const { setLoading, setError, setFilter, setSelectedCollection } = collectionSlice.actions;
 export default collectionSlice;

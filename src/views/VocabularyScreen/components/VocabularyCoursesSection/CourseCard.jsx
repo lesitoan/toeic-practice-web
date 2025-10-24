@@ -1,5 +1,6 @@
 import { Button } from '@nextui-org/react';
-import { Play, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default function CourseCard({ collection, viewMode }) {
   return (
@@ -61,7 +62,8 @@ export default function CourseCard({ collection, viewMode }) {
           <Button
             color="primary"
             className="w-full h-12 rounded-lg shadow-md cursor-pointer"
-            type="submit"
+            as={Link}
+            href={`/collections/${collection.id}`}
           >
             Học ngay
           </Button>

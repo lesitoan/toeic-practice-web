@@ -20,36 +20,37 @@ export default function MainLayout({ children }) {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = cookies[USER_ACCESS_TOKEN];
-      if (token) {
-        requestHelpers.setAuthorizationToken(token);
-      }
+      try {
+        const token = cookies[USER_ACCESS_TOKEN];
+        if (token) {
+          requestHelpers.setAuthorizationToken(token);
+        }
 
-      let role = userProfile?.role;
-      if (!role && token) {
-        const result = await dispatch(mineProfile());
-        role = result.payload?.role;
-      }
+        let role = userProfile?.role;
+        if (!role && token) {
+          const result = await dispatch(mineProfile());
+          role = result.payload?.role;
+        }
 
-      const matched = PROTECTED_ROUTES.find((r) => r.pathRegex.test(pathname));
-      if (!matched) {
-        setShowUpgradePopup(false);
-        return;
-      }
-      if (!token) {
-        router.push('/login');
-        return;
-      }
+        const matched = PROTECTED_ROUTES.find((r) => r.pathRegex.test(pathname));
+        if (!matched) {
+          setShowUpgradePopup(false);
+          return;
+        }
+        if (!token) {
+          router.push('/login');
+          return;
+        }
 
-      if (!role) {
-        router.push('/login');
-      } else if (!matched.roles.includes(role)) {
-        setShowUpgradePopup(true);
-      } else {
-        setShowUpgradePopup(false);
-      }
+        if (!role) {
+          router.push('/login');
+        } else if (!matched.roles.includes(role)) {
+          setShowUpgradePopup(true);
+        } else {
+          setShowUpgradePopup(false);
+        }
+      } catch (error) {}
     };
-
     checkAuth();
   }, [pathname, cookies, userProfile, dispatch, router]);
 
