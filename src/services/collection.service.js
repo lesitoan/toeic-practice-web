@@ -1,15 +1,30 @@
 import { PREFIX_SERVICES } from '@/constants/services';
+import { mockCollectionService } from '@/data/collections';
 import requestHelpers from '@/utils/requestHelper';
 
 const collectionServices = {
-  createCollection: async (data) =>
-    requestHelpers.post(PREFIX_SERVICES.collection_service_v1, '', data), // chưa có
-  updateCollectionName: async (id, data) =>
-    requestHelpers.put(`${PREFIX_SERVICES.collection_service_v1}/${id}`, data), // chưa có
-  deleteCollection: async (id) =>
-    requestHelpers.delete(`${PREFIX_SERVICES.collection_service_v1}/${id}`), // chưa có
-  getCollections: async (params) =>
-    requestHelpers.get(PREFIX_SERVICES.collection_service_v1, '', { params }), // chưa có
+  createCollection: async (data) => {
+    // return requestHelpers.post(PREFIX_SERVICES.collection_service_v1, '', data);
+    //mock data
+    return mockCollectionService.createCollection(data);
+  },
+  updateCollectionName: async (id, data) => {
+    // return requestHelpers.put(`${PREFIX_SERVICES.collection_service_v1}/${id}`, data),
+    //mock data
+    return mockCollectionService.updateCollection(id, data);
+  },
+
+  deleteCollection: async (id) => {
+    // return requestHelpers.delete(`${PREFIX_SERVICES.collection_service_v1}/${id}`);
+    //mock data
+    return mockCollectionService.deleteCollection(id);
+  },
+
+  getCollections: async (params) => {
+    // return requestHelpers.get(PREFIX_SERVICES.collection_service_v1, '', { params });
+    //mock data
+    return mockCollectionService.getCollections(params);
+  },
 };
 
 export default collectionServices;
