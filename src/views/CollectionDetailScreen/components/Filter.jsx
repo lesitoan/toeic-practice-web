@@ -1,29 +1,45 @@
 'use client';
+import { Input } from '@nextui-org/react';
+import { debounce } from 'lodash';
 import { Search } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-export function SearchAndFilter({
-  searchQuery,
-  onSearchChange,
-  selectedCategory,
-  onCategoryChange,
-  categories,
-}) {
+export function Filter() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleSearchChange = debounce((value) => {
+    const params = new URLSearchParams(searchParams);
+    if (value === '') {
+      params.delete('search');
+    } else {
+      params.set('search', value);
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  }, 500);
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
       <div className="mb-4">
         <div className="relative">
           <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-          <input
-            type="text"
+          <Input
+            name="search"
             placeholder="Tìm kiếm từ vựng..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            type="text"
+            color="primary"
+            onValueChange={handleSearchChange}
+            classNames={{
+              base: 'h-12',
+              input: `text-md`,
+              inputWrapper: `!h-[300px] !rounded-lg`,
+            }}
           />
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      {/* <div className="flex flex-wrap gap-2">
         {categories.map((category) => (
           <button
             key={category}
@@ -37,7 +53,7 @@ export function SearchAndFilter({
             {category}
           </button>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }

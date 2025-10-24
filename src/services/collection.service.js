@@ -25,6 +25,12 @@ const collectionServices = {
     //mock data
     return mockCollectionService.getCollections(params);
   },
+
+  getCollectionById: async (id) => {
+    // return requestHelpers.get(`${PREFIX_SERVICES.collection_service_v1}/${id}`);
+    //mock data
+    return mockCollectionService.getCollectionById(id);
+  },
 };
 
 export default collectionServices;

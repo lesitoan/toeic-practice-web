@@ -1,6 +1,6 @@
 export const MOCK_COLLECTIONS = [
   {
-    id: 1,
+    id: '1',
     name: 'Bộ từ vựng 1',
     level: 'Cơ bản',
     wordCount: 100,
@@ -9,7 +9,7 @@ export const MOCK_COLLECTIONS = [
     isFavorite: true,
   },
   {
-    id: 2,
+    id: '2',
     name: 'Bộ từ vựng 2',
     level: 'Cơ bản',
     wordCount: 120,
@@ -18,7 +18,7 @@ export const MOCK_COLLECTIONS = [
     isFavorite: false,
   },
   {
-    id: 3,
+    id: '3',
     name: 'Bộ từ vựng 3',
     level: 'Cơ bản',
     wordCount: 80,
@@ -27,7 +27,7 @@ export const MOCK_COLLECTIONS = [
     isFavorite: true,
   },
   {
-    id: 4,
+    id: '4',
     name: 'Bộ từ vựng 4',
     level: 'Cơ bản',
     wordCount: 150,
@@ -36,7 +36,7 @@ export const MOCK_COLLECTIONS = [
     isFavorite: false,
   },
   {
-    id: 5,
+    id: '5',
     name: 'bộ từ vựng của tôi',
     level: 'Cơ bản',
     wordCount: 200,

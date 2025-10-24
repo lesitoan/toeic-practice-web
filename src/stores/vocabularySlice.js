@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import vocabularyServices from '@/services/vocabulary.service';
 import { showErrorMessage } from '@/utils/common';
-import { MOCK_VOCABULARIES } from '@/data/vocabulary';
 
 const initialState = {
   vocabularies: [],
+  selectedVocabulary: null,
   filter: {
     page: 1,
     pageSize: 10,
@@ -41,15 +41,27 @@ const vocabularySlice = createSlice({
     setFilter: (state, action) => {
       state.filter = { ...state.filter, ...action.payload };
     },
+    setSelectedVocabulary: (state, action) => {
+      state.selectedVocabulary = action.payload;
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchVocabularies.fulfilled, (state, action) => {
-      if (action.payload) {
-        state.vocabularies = action.payload;
-      }
-    });
+    builder
+      .addCase(fetchVocabularies.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchVocabularies.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.vocabularies = action.payload;
+        }
+      })
+      .addCase(fetchVocabularies.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
   },
 });
 
-export const { setLoading, setError, setFilter } = vocabularySlice.actions;
+export const { setLoading, setError, setFilter, setSelectedVocabulary } = vocabularySlice.actions;
 export default vocabularySlice;

@@ -1,19 +1,34 @@
-import { useState } from 'react';
+import { use, useCallback, useEffect, useState } from 'react';
 import { Edit2, X, Save } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams } from 'next/navigation';
+import { fetchCollectionById, setSelectedCollection } from '@/stores/collectionSlice';
+import collectionServices from '@/services/collection.service';
 
-export function CollectionHeader({ name, description, onNameChange }) {
+export function CollectionHeader() {
+  const dispatch = useDispatch();
   const [isEditingName, setIsEditingName] = useState(false);
-  const [editedName, setEditedName] = useState(name);
+  const [editedName, setEditedName] = useState('');
+  const { selectedCollection } = useSelector((state) => state.collection);
+  const { collectionId } = useParams();
 
-  const handleSaveName = () => {
-    onNameChange(editedName);
-    setIsEditingName(false);
-  };
+  useEffect(() => {
+    dispatch(fetchCollectionById(collectionId));
 
-  const handleCancelEdit = () => {
-    setEditedName(name);
+    return () => {
+      dispatch(setSelectedCollection(null));
+    };
+  }, [collectionId]);
+
+  useEffect(() => {
+    setEditedName(selectedCollection?.name || '');
+  }, [selectedCollection]);
+
+  const handleSaveName = useCallback(() => {
+    collectionServices.updateCollectionName(collectionId, { name: editedName });
     setIsEditingName(false);
-  };
+    dispatch(fetchCollectionById(collectionId));
+  }, [editedName]);
 
   return (
     <div className="mb-8">
@@ -29,14 +44,16 @@ export function CollectionHeader({ name, description, onNameChange }) {
               />
             </div>
           ) : (
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">{name}</h1>
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">
+              {selectedCollection?.name || 'Đang tải...'}
+            </h1>
           )}
-          <p className="text-gray-600">{description}</p>
+          <p className="text-gray-600">{selectedCollection?.description || ''}</p>
         </div>
         <button
           onClick={() => {
             if (isEditingName) {
-              handleCancelEdit();
+              setIsEditingName(false);
             } else {
               setIsEditingName(true);
             }
@@ -62,7 +79,7 @@ export function CollectionHeader({ name, description, onNameChange }) {
             Lưu
           </button>
           <button
-            onClick={handleCancelEdit}
+            onClick={() => setIsEditingName(false)}
             className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors"
           >
             Hủy

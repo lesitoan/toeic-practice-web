@@ -1,10 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Volume2, Copy, Check } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setSelectedVocabulary } from '@/stores/vocabularySlice';
 
-export function VocabularyDetail({ vocab }) {
+export function VocabularyDetail() {
+  const dispatch = useDispatch();
   const [copiedId, setCopiedId] = useState(null);
+  const { loading, selectedVocabulary } = useSelector((state) => state.vocabulary);
+
+  const vocab = selectedVocabulary;
 
   const handleSpeak = (word) => {
     const utterance = new SpeechSynthesisUtterance(word);
@@ -18,7 +24,11 @@ export function VocabularyDetail({ vocab }) {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  if (!vocab) {
+  useEffect(() => {
+    return () => dispatch(setSelectedVocabulary(null));
+  }, []);
+
+  if (!selectedVocabulary) {
     return (
       <div className="lg:col-span-1">
         <div className="bg-white rounded-lg shadow-md p-6 sticky top-6">
@@ -50,12 +60,12 @@ export function VocabularyDetail({ vocab }) {
 
         <div className="mb-4">
           <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Loại từ</p>
-          <p className="text-gray-800">{vocab.partOfSpeech}</p>
+          <p className="text-gray-800">{vocab.part_of_speech}</p>
         </div>
 
         <div className="mb-4">
           <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Nghĩa</p>
-          <p className="text-gray-800">{vocab.meaning}</p>
+          <p className="text-gray-800">{vocab.definition}</p>
         </div>
 
         <div className="mb-4">
@@ -66,11 +76,11 @@ export function VocabularyDetail({ vocab }) {
         <div className="mb-6">
           <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Từ đồng nghĩa</p>
           <div className="flex flex-wrap gap-2">
-            {vocab.synonyms.map((syn, idx) => (
+            {/* {vocab.synonyms.map((syn, idx) => (
               <span key={idx} className="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded">
                 {syn}
               </span>
-            ))}
+            ))} */}
           </div>
         </div>
 

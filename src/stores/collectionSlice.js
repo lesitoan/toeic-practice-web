@@ -1,11 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import collectionServices from '@/services/collection.service';
 import { showErrorMessage } from '@/utils/common';
-import { MOCK_COLLECTIONS } from '@/data/collections';
 
 const initialState = {
   collections: [],
-  selectedCollectionId: null,
+  selectedCollection: null,
   filter: {
     page: 1,
     pageSize: 10,
@@ -26,6 +25,18 @@ export const fetchCollections = createAsyncThunk(
   }
 );
 
+export const fetchCollectionById = createAsyncThunk(
+  'collection/fetchCollectionById',
+  async (id, { dispatch }) => {
+    try {
+      const data = await collectionServices.getCollectionById(id);
+      return data;
+    } catch (error) {
+      showErrorMessage(error.message);
+    }
+  }
+);
+
 const collectionSlice = createSlice({
   name: 'collection',
   initialState,
@@ -39,8 +50,8 @@ const collectionSlice = createSlice({
     setFilter: (state, action) => {
       state.filter = { ...state.filter, ...action.payload };
     },
-    setSelectedCollectionId: (state, action) => {
-      state.selectedCollectionId = action.payload;
+    setSelectedCollection: (state, action) => {
+      state.selectedCollection = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -57,8 +68,21 @@ const collectionSlice = createSlice({
         state.loading = false;
         state.error = action.error?.message || 'Lỗi tải dữ liệu';
       });
+
+    builder
+      .addCase(fetchCollectionById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchCollectionById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedCollection = action.payload || null;
+      })
+      .addCase(fetchCollectionById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message || 'Lỗi tải dữ liệu';
+      });
   },
 });
 
-export const { setLoading, setError, setFilter, setSelectedCollectionId } = collectionSlice.actions;
+export const { setLoading, setError, setFilter, setSelectedCollection } = collectionSlice.actions;
 export default collectionSlice;
