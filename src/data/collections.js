@@ -67,7 +67,13 @@ class FakeCollectionService {
   }
 
   async createCollection(data) {
-    let newCollection = { id: Date.now(), ...data };
+    let newCollection = {
+      id: Date.now().toString(),
+      wordCount: 0,
+      level: 'Cơ bản',
+      type: 'created',
+      ...data,
+    };
     MOCK_COLLECTIONS.push(newCollection);
     await new Promise((r) => setTimeout(r, 1500));
     return newCollection;
