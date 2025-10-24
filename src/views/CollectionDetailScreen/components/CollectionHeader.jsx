@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'next/navigation';
 import { fetchCollectionById, setSelectedCollection } from '@/stores/collectionSlice';
 import collectionServices from '@/services/collection.service';
+import { toast } from 'react-toastify';
 
 export function CollectionHeader() {
   const dispatch = useDispatch();
@@ -24,10 +25,14 @@ export function CollectionHeader() {
     setEditedName(selectedCollection?.name || '');
   }, [selectedCollection]);
 
-  const handleSaveName = useCallback(() => {
-    collectionServices.updateCollectionName(collectionId, { name: editedName });
-    setIsEditingName(false);
-    dispatch(fetchCollectionById(collectionId));
+  const handleSaveName = useCallback(async () => {
+    try {
+      await collectionServices.updateCollectionName(collectionId, { name: editedName });
+      setIsEditingName(false);
+      dispatch(fetchCollectionById(collectionId));
+    } catch (error) {
+      toast.error('Cập nhật tên bộ sưu tập thất bại. Vui lòng thử lại sau.');
+    }
   }, [editedName]);
 
   return (

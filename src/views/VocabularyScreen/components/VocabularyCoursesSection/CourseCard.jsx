@@ -1,8 +1,24 @@
 import { Button } from '@nextui-org/react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Trash } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import collectionServices from '@/services/collection.service';
+import { fetchCollections } from '@/stores/collectionSlice';
 
 export default function CourseCard({ collection, viewMode }) {
+  const dispatch = useDispatch();
+
+  const handleDelete = async () => {
+    try {
+      await collectionServices.deleteCollection(collection.id);
+      toast.success('Xoá bộ từ vựng thành công.');
+      dispatch(fetchCollections({ type: 'created' }));
+    } catch (error) {
+      toast.error('Xoá bộ từ vựng thất bại. Vui lòng thử lại sau.');
+    }
+  };
+
   return (
     <div
       key={collection.id}
@@ -67,9 +83,18 @@ export default function CourseCard({ collection, viewMode }) {
           >
             Học ngay
           </Button>
-          <button className="px-4 py-3 transition-colors bg-white bg-opacity-70 hover:bg-opacity-90 rounded-xl">
-            <ChevronRight className="w-5 h-5 text-gray-600" />
-          </button>
+          <Button
+            color="default"
+            className={`h-12 rounded-lg shadow-md cursor-pointer ${collection?.type === 'created' ? 'bg-red-400' : ''}`}
+            onPress={() => handleDelete()}
+            disabled={collection?.type !== 'created'}
+          >
+            {collection?.type !== 'created' ? (
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            ) : (
+              <Trash className="w-5 h-5 text-white" />
+            )}
+          </Button>
         </div>
       </div>
     </div>
