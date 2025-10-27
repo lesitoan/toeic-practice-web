@@ -9,63 +9,10 @@ import {
   Loader2,
   AlertCircle,
   Heart,
+  Plus,
 } from 'lucide-react';
 import { Button, Input } from '@nextui-org/react';
-
-const mockDictionary = {
-  // Việt-Anh
-  'xin chào': {
-    translation: 'hello',
-    pronunciation: '/həˈloʊ/',
-    partOfSpeech: 'interjection',
-    examples: [
-      { en: 'Hello, how are you?', vi: 'Xin chào, bạn khỏe không?' },
-      { en: 'Hello everyone!', vi: 'Xin chào mọi người!' },
-    ],
-    synonyms: ['hi', 'hey', 'greetings'],
-  },
-  sách: {
-    translation: 'book',
-    pronunciation: '/bʊk/',
-    partOfSpeech: 'noun',
-    examples: [
-      { en: 'I love reading books', vi: 'Tôi thích đọc sách' },
-      { en: 'This book is very interesting', vi: 'Cuốn sách này rất thú vị' },
-    ],
-    synonyms: ['volume', 'publication', 'text'],
-  },
-  // Anh-Việt
-  hello: {
-    translation: 'xin chào',
-    pronunciation: '/həˈloʊ/',
-    partOfSpeech: 'thán từ',
-    examples: [
-      { en: 'Hello, how are you?', vi: 'Xin chào, bạn khỏe không?' },
-      { en: 'Hello everyone!', vi: 'Xin chào mọi người!' },
-    ],
-    synonyms: ['hi', 'hey', 'greetings'],
-  },
-  book: {
-    translation: 'sách',
-    pronunciation: '/bʊk/',
-    partOfSpeech: 'danh từ',
-    examples: [
-      { en: 'I love reading books', vi: 'Tôi thích đọc sách' },
-      { en: 'This book is very interesting', vi: 'Cuốn sách này rất thú vị' },
-    ],
-    synonyms: ['volume', 'publication', 'text'],
-  },
-  computer: {
-    translation: 'máy tính',
-    pronunciation: '/kəmˈpjuːtər/',
-    partOfSpeech: 'danh từ',
-    examples: [
-      { en: 'I use a computer for work', vi: 'Tôi sử dụng máy tính để làm việc' },
-      { en: 'This computer is very fast', vi: 'Máy tính này rất nhanh' },
-    ],
-    synonyms: ['PC', 'laptop', 'desktop'],
-  },
-};
+import translatorVocaServices from '@/services/translatorVocaService';
 
 const VocabularyTranslator = () => {
   const [inputText, setInputText] = useState('');
@@ -79,24 +26,24 @@ const VocabularyTranslator = () => {
     if (!inputText.trim()) return;
     setIsLoading(true);
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     const searchTerm = inputText.toLowerCase().trim();
-    const result = mockDictionary[searchTerm];
+    const res = await translatorVocaServices.translateText(
+      searchTerm,
+      isVietnameseToEnglish ? 'vi|en' : 'en|vi'
+    );
+    const translatedText = res?.responseData?.translatedText;
 
-    if (result) {
+    if (translatedText) {
       setTranslation({
         input: inputText,
-        ...result,
+        translation: translatedText,
         isVietnameseToEnglish,
       });
 
-      // Add to search history
       const newHistoryItem = {
         id: Date.now(),
         input: inputText,
-        translation: result.translation,
+        translation: translatedText,
         timestamp: new Date(),
       };
       setSearchHistory((prev) => [newHistoryItem, ...prev.slice(0, 4)]);
@@ -108,6 +55,16 @@ const VocabularyTranslator = () => {
     }
 
     setIsLoading(false);
+  };
+
+  const handleAddToCollection = () => {
+    const wordToAdd = {
+      en: isVietnameseToEnglish ? translation.translation : translation.input,
+      vi: isVietnameseToEnglish ? translation.input : translation.translation,
+    };
+    // thêm từ vựng vào server
+
+    //thêm vào bộ sưu tập
   };
 
   const toggleLanguage = () => {
@@ -174,6 +131,7 @@ const VocabularyTranslator = () => {
             placeholder={isVietnameseToEnglish ? 'Nhập từ tiếng Việt...' : 'Enter English word...'}
             type="text"
             color="primary"
+            value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             classNames={{
               base: 'h-12',
@@ -226,7 +184,7 @@ const VocabularyTranslator = () => {
                 </div>
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => playPronunciation(translation.translation)}
+                    onClick={() => playPronunciation(inputText)}
                     className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
                   >
                     <Volume2 className="w-5 h-5" />
@@ -242,6 +200,14 @@ const VocabularyTranslator = () => {
                     className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
                   >
                     <Heart className="w-5 h-5" />
+                  </button>
+
+                  <button
+                    onClick={() => handleAddToCollection()}
+                    className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors flex items-center space-x-2"
+                  >
+                    <Plus className="w-5 h-5" />
+                    Thêm vào danh sách
                   </button>
                 </div>
               </div>

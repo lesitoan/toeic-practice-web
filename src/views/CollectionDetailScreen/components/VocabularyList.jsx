@@ -10,8 +10,10 @@ export function VocabularyList({ filter }) {
   const { loading, vocabularies, selectedVocabulary } = useSelector((state) => state.vocabulary);
   const { collectionId } = useParams();
   useEffect(() => {
+    //random fake collectionId for testing
+    const fakeCollectionId = Math.floor(Math.random() * 4) + 1;
     if (collectionId) {
-      dispatch(fetchVocabularies({ ...filter, collectionId }));
+      dispatch(fetchVocabularies({ ...filter, collectionId: fakeCollectionId.toString() }));
     }
   }, [collectionId, filter]);
 

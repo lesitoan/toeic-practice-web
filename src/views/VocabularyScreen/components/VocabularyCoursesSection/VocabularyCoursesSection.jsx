@@ -31,7 +31,8 @@ export default function VocabularyCoursesSection() {
   }, [queryString]);
 
   useEffect(() => {
-    dispatch(fetchCollections(filter));
+    // dispatch(fetchCollections(filter));
+    dispatch(fetchCollections({}));
   }, [dispatch, filter]);
 
   return (
