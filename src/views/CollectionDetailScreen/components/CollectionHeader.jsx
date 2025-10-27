@@ -13,6 +13,8 @@ export function CollectionHeader() {
   const { selectedCollection } = useSelector((state) => state.collection);
   const { collectionId } = useParams();
 
+  console.log('Selected Collection in Header:', selectedCollection);
+
   useEffect(() => {
     dispatch(fetchCollectionById(collectionId));
 
@@ -22,7 +24,7 @@ export function CollectionHeader() {
   }, [collectionId]);
 
   useEffect(() => {
-    setEditedName(selectedCollection?.name || '');
+    setEditedName(selectedCollection?.title || '');
   }, [selectedCollection]);
 
   const handleSaveName = useCallback(async () => {
@@ -50,7 +52,7 @@ export function CollectionHeader() {
             </div>
           ) : (
             <h1 className="text-4xl font-bold text-gray-800 mb-2">
-              {selectedCollection?.name || 'Đang tải...'}
+              {selectedCollection?.title || 'Đang tải...'}
             </h1>
           )}
           <p className="text-gray-600">{selectedCollection?.description || ''}</p>

@@ -25,11 +25,12 @@ export default function AddCollectionPopup({ isOpen, onClose }) {
       try {
         console.log('Creating collection with data:', data);
         await collectionServices.createCollection({
-          name: data.collectionName,
+          title: data.collectionName,
           description: data.description || '',
         });
         toast.success('Tạo bộ sưu tập thành công!');
-        dispatch(fetchCollections({ type: 'created' }));
+        // dispatch(fetchCollections({ type: 'created' }));
+        dispatch(fetchCollections());
         handleClose();
       } catch (error) {
         console.log('Error creating collection:', error);

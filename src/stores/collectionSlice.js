@@ -18,7 +18,7 @@ export const fetchCollections = createAsyncThunk(
   async (params, { dispatch }) => {
     try {
       const data = await collectionServices.getCollections(params);
-      return data;
+      return data?.items || [];
     } catch (error) {
       showErrorMessage(error.message);
     }
@@ -30,7 +30,7 @@ export const fetchCollectionById = createAsyncThunk(
   async (id, { dispatch }) => {
     try {
       const data = await collectionServices.getCollectionById(id);
-      return data;
+      return data?.collection || null;
     } catch (error) {
       showErrorMessage(error.message);
     }
