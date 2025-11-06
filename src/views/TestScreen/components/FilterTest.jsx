@@ -3,30 +3,44 @@ import { Search } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import CustomDropdown from '@/components/common/CustomDropdow';
 import { Button, Input } from '@nextui-org/react';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { debounce } from 'lodash';
 
-export default function FilterComponent({ filter, setFilter }) {
-  const [searchTerm, setSearchTerm] = useState('');
+export default function FilterTest({ filter, setFilter }) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
 
-  const { control, handleSubmit, watch } = useForm({
+  const handleSearchChange = debounce((value) => {
+    const params = new URLSearchParams(searchParams);
+    if (value === '') {
+      params.delete('search');
+    } else {
+      params.set('search', value);
+      params.set('page', 1);
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  }, 500);
+
+  const { control, watch } = useForm({
     defaultValues: {
       category: '',
     },
   });
 
-  const category = watch('category');
-  const skill = watch('skill');
-  const sortBy = watch('sortBy');
+  // const category = watch('category');
+  // const skill = watch('skill');
+  // const sortBy = watch('sortBy');
 
-  useEffect(() => {
-    if (searchTerm || category || sortBy || skill) {
-      setFilter((prev) => ({
-        searchTerm: searchTerm || prev.searchTerm,
-        selectedCategory: category || prev.selectedCategory,
-        selectedSkill: skill || prev.selectedSkill,
-        sortBy: sortBy || prev.sortBy,
-      }));
-    }
-  }, [searchTerm, category, sortBy, skill]);
+  // useEffect(() => {
+  //   if (category || sortBy || skill) {
+  //     setFilter((prev) => ({
+  //       selectedCategory: category || prev.selectedCategory,
+  //       selectedSkill: skill || prev.selectedSkill,
+  //       sortBy: sortBy || prev.sortBy,
+  //     }));
+  //   }
+  // }, [category, sortBy, skill]);
 
   // Get unique categories and skills
   const categories = ['Toeic', 'IELTS', 'Grammar', 'Vocabulary'];
@@ -43,7 +57,7 @@ export default function FilterComponent({ filter, setFilter }) {
               placeholder="Nhập tên đề thi..."
               type="text"
               color="primary"
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               classNames={{
                 base: '',
                 input: 'text-md',

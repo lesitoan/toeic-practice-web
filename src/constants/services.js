@@ -4,4 +4,5 @@ export const PREFIX_SERVICES = {
   profile_service_v1: '/api/v1/authentication/information',
   vocabulary_service_v1: '/api/v1/vocabulary',
   collection_service_v1: '/api/v1/collections',
+  test_service_v1: '/api/v1/test',
 };
