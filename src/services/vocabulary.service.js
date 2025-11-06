@@ -54,10 +54,15 @@ const vocabularyService = {
     // return fakeVocabularyService.saveVocabularyCollection(data);
   },
 
-  deleteVocabularyFromCollection: async (id) => {
-    // return requestHelpers.delete(`${PREFIX_SERVICES.vocabulary_service_v1}/${id}`);
+  deleteVocabularyFromCollection: async (data) => {
+    const { collectionId, vocabularyId } = data || {};
+    if (!collectionId || !vocabularyId) return;
+    return requestHelpers.delete(
+      PREFIX_SERVICES.collection_service_v1,
+      `/${collectionId}/vocabularies/${vocabularyId}`
+    );
     //mock data
-    return fakeVocabularyService.deleteVocabularyFromCollection(id);
+    // return fakeVocabularyService.deleteVocabularyFromCollection(id);
   },
 };
 
