@@ -5,11 +5,13 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import profileServices from '@/services/profile.service';
 import { useDispatch } from 'react-redux';
-import { mineProfile } from '@/stores/mineSlice';
+import { logout } from '@/stores/mineSlice';
 import CradleLoader from '@/components/common/Loading/CradleLoader';
+import { useRouter } from 'next/navigation';
 
 export default function ChangePasswordForm() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showPasswordFields, setShowPasswordFields] = useState({
     old: false,
@@ -35,12 +37,17 @@ export default function ChangePasswordForm() {
   const handleUpdatePassword = async (data) => {
     setLoading(true);
     try {
-      const response = await profileServices.updatePassword(data);
+      const payload = {
+        password: data.oldPassword,
+        new_password: data.newPassword,
+      };
+      const response = await profileServices.updatePassword(payload);
       if (!response) {
         throw new Error('Đổi mật khẩu thất bại');
       }
-      await dispatch(mineProfile());
       toast.success('Đổi mật khẩu thành công');
+      dispatch(logout());
+      router.push('/login');
     } catch (error) {
       toast.error('Đổi mật khẩu thất bại');
     } finally {

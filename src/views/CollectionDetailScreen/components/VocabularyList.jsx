@@ -1,14 +1,19 @@
 'use client';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'next/navigation';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { VocabularyListSkeleton } from '@/components/Skeletons/VocabularyListSkeleton';
 import { fetchVocabulariesByCollectionId, setSelectedVocabulary } from '@/stores/vocabularySlice';
+import { Trash } from 'lucide-react';
+import { toast } from 'react-toastify';
+import vocabularyService from '@/services/vocabulary.service';
 
 export function VocabularyList({ filter }) {
   const dispatch = useDispatch();
   const { loading, vocabularies, selectedVocabulary } = useSelector((state) => state.vocabulary);
   const { collectionId } = useParams();
+  const [isDeleting, setIsDeleting] = useState(false);
+
   useEffect(() => {
     if (collectionId) {
       dispatch(fetchVocabulariesByCollectionId({ ...filter, collectionId }));
@@ -21,6 +26,23 @@ export function VocabularyList({ filter }) {
     },
     [dispatch]
   );
+
+  const handleDeleteVocabulary = async (vocabularyId) => {
+    if (!vocabularyId || !collectionId) return;
+    setIsDeleting(true);
+    try {
+      await vocabularyService.deleteVocabularyFromCollection({
+        vocabularyId,
+        collectionId,
+      });
+      toast.success('Xóa từ vựng thành công');
+      dispatch(fetchVocabulariesByCollectionId({ ...filter, collectionId }));
+    } catch (error) {
+      toast.error('Xóa từ vựng thất bại');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   if (loading) return <VocabularyListSkeleton count={5} />;
   return (
@@ -42,15 +64,22 @@ export function VocabularyList({ filter }) {
                     : 'hover:bg-gray-50'
                 }`}
               >
-                <div className="flex items-start justify-between">
+                <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-gray-800">{vocab.word}</h3>
                     <p className="text-sm text-gray-500">{vocab.phonetic}</p>
                     <p className="text-sm text-gray-600 mt-1">{vocab.definition}</p>
                   </div>
-                  <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full ml-4">
+                  {/* <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full ml-4">
                     {vocab.part_of_speech}
-                  </span>
+                  </span> */}
+                  <button
+                    onClick={() => handleDeleteVocabulary(vocab?.id)}
+                    disabled={isDeleting}
+                    className={`opacity-90 hover:opacity-40 transition-opacity cursor-pointer ${isDeleting && '!opacity-50 !cursor-not-allowed'}`}
+                  >
+                    <Trash className="text-red-600" />
+                  </button>
                 </div>
               </div>
             ))}
