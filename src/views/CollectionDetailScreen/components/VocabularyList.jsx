@@ -3,17 +3,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
 import { VocabularyListSkeleton } from '@/components/Skeletons/VocabularyListSkeleton';
-import { fetchVocabularies, setSelectedVocabulary } from '@/stores/vocabularySlice';
+import { fetchVocabulariesByCollectionId, setSelectedVocabulary } from '@/stores/vocabularySlice';
 
 export function VocabularyList({ filter }) {
   const dispatch = useDispatch();
   const { loading, vocabularies, selectedVocabulary } = useSelector((state) => state.vocabulary);
   const { collectionId } = useParams();
   useEffect(() => {
-    //random fake collectionId for testing
-    const fakeCollectionId = Math.floor(Math.random() * 4) + 1;
     if (collectionId) {
-      dispatch(fetchVocabularies({ ...filter, collectionId: fakeCollectionId.toString() }));
+      dispatch(fetchVocabulariesByCollectionId({ ...filter, collectionId }));
     }
   }, [collectionId, filter]);
 
@@ -36,10 +34,10 @@ export function VocabularyList({ filter }) {
           <div className="divide-y max-h-[600px] overflow-y-auto">
             {vocabularies.map((vocab) => (
               <div
-                key={vocab.id}
+                key={vocab?.id || Math.random()}
                 onClick={() => onSelectVocab(vocab)}
                 className={`p-4 cursor-pointer transition-colors ${
-                  selectedVocabulary?.id === vocab.id
+                  selectedVocabulary?.word === vocab.word
                     ? 'bg-indigo-50 border-l-4 border-indigo-600'
                     : 'hover:bg-gray-50'
                 }`}

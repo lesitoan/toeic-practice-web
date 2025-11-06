@@ -13,13 +13,16 @@ const initialState = {
   error: null,
 };
 
-export const fetchVocabularies = createAsyncThunk(
-  'vocabulary/fetchVocabularies',
+export const fetchVocabulariesByCollectionId = createAsyncThunk(
+  'vocabulary/fetchVocabulariesByCollectionId',
   async (params, { dispatch }) => {
     dispatch(setLoading(true));
     try {
-      const data = await vocabularyServices.getVocabularies(params);
-      return data;
+      const { collectionId } = params;
+      if (!collectionId) return;
+      const data = await vocabularyServices.getVocabulariesByCollectionId(collectionId);
+      if (data?.items);
+      return data?.items || [];
     } catch (error) {
       showErrorMessage(error.message);
     } finally {
@@ -47,16 +50,16 @@ const vocabularySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchVocabularies.pending, (state) => {
+      .addCase(fetchVocabulariesByCollectionId.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchVocabularies.fulfilled, (state, action) => {
+      .addCase(fetchVocabulariesByCollectionId.fulfilled, (state, action) => {
         if (action.payload) {
           state.vocabularies = action.payload;
         }
       })
-      .addCase(fetchVocabularies.rejected, (state, action) => {
+      .addCase(fetchVocabulariesByCollectionId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

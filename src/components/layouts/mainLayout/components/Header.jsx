@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { useCookies } from 'react-cookie';
 import { USER_ACCESS_TOKEN } from '@/constants/common';
 import ProfilePopup from '@/components/common/ProfilePopup';
-import { getAvartarUrl } from '@/utils/common';
+import { getAvatarUrl } from '@/utils/common';
 
 // Header Component
 export default function Header() {
@@ -21,7 +21,7 @@ export default function Header() {
 
   useEffect(() => {
     if (userProfile && cookies[USER_ACCESS_TOKEN]) {
-      setAvatarUrl(getAvartarUrl(userProfile.avatar));
+      setAvatarUrl(getAvatarUrl(userProfile.avatar));
     } else {
       setAvatarUrl('');
     }

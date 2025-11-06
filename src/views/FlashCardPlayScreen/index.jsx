@@ -3,7 +3,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import Flashcard from './components/FlashCard';
-import { fetchVocabularies } from '@/stores/vocabularySlice';
+import { fetchVocabulariesByCollectionId } from '@/stores/vocabularySlice';
 import PopupFinishLearnCard from '@/components/popup/PopupFinishLearnCard';
 import CradleLoader from '@/components/common/Loading/CradleLoader';
 import { AlertCircle, ArrowLeft, Home } from 'lucide-react';
@@ -19,7 +19,7 @@ export default function FlashCardPlayScreen() {
 
   useEffect(() => {
     if (collectionSelectedId) {
-      dispatch(fetchVocabularies({ collectionId: collectionSelectedId }));
+      dispatch(fetchVocabulariesByCollectionId({ collectionId: collectionSelectedId }));
     }
   }, [collectionSelectedId]);
 

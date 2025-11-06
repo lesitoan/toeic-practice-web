@@ -8,7 +8,7 @@ import { useCookies } from 'react-cookie';
 import requestHelpers from '@/utils/requestHelper';
 import { useDispatch } from 'react-redux';
 import { logout } from '@/stores/mineSlice';
-import { getAvartarUrl } from '@/utils/common';
+import { getAvatarUrl } from '@/utils/common';
 
 export default function ProfilePopup({ isOpen, setIsOpen, userProfile }) {
   const dispatch = useDispatch();
@@ -38,7 +38,7 @@ export default function ProfilePopup({ isOpen, setIsOpen, userProfile }) {
               <div className="flex items-center space-x-4">
                 <div className="relative">
                   <img
-                    src={getAvartarUrl(userProfile.avatar)}
+                    src={getAvatarUrl(userProfile.avatar)}
                     alt="Profile"
                     className="w-16 h-16 rounded-full border-3 border-white shadow-lg"
                   />

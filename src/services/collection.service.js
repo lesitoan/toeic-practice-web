@@ -21,7 +21,7 @@ const collectionServices = {
   },
 
   getCollections: async (params) => {
-    return requestHelpers.get(PREFIX_SERVICES.collection_service_v1, '/student', { params });
+    return requestHelpers.get(PREFIX_SERVICES.collection_service_v1, '', { params });
     //mock data
     // return mockCollectionService.getCollections(params);
   },
