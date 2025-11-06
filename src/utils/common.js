@@ -6,7 +6,7 @@ export const showErrorMessage = (message) => {
   }
 };
 
-export const getAvartarUrl = (avatarUrl) => {
+export const getAvatarUrl = (avatarUrl) => {
   const regex = /^(https?:\/\/[^\s]+|\/[^\s]+)/i;
   if (!avatarUrl || regex.test(avatarUrl) === false) {
     avatarUrl = '/images/default-avatar.jpg';
