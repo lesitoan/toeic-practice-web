@@ -3,10 +3,10 @@ import { fakeVocabularyService } from '@/data/vocabulary';
 import requestHelpers from '@/utils/requestHelper';
 
 const vocabularyService = {
-  getVocabularies: async (params) => {
-    // return requestHelpers.get(PREFIX_SERVICES.vocabulary_service_v1, '', { params });
+  getVocabulariesByCollectionId: async (id) => {
+    return requestHelpers.get(`${PREFIX_SERVICES.collection_service_v1}/${id}`, '');
     //mock data
-    return fakeVocabularyService.getVocabularies(params);
+    // return fakeVocabularyService.getVocabularies(params);
   },
 
   saveVocabularyCollection: async (data) => {
