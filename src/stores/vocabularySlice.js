@@ -21,7 +21,6 @@ export const fetchVocabulariesByCollectionId = createAsyncThunk(
       const { collectionId } = params;
       if (!collectionId) return;
       const data = await vocabularyServices.getVocabulariesByCollectionId(collectionId);
-      if (data?.items);
       return data?.items || [];
     } catch (error) {
       showErrorMessage(error.message);

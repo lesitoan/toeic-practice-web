@@ -141,7 +141,7 @@ export const AddVocaToCollectionPopup = ({ isOpen, onClose, word }) => {
                 Tạo bộ sưu tập đầu tiên để lưu và quản lý từ vựng của bạn
               </p>
               <a
-                href="/collections/create"
+                href="/vocabulary"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg font-medium"
               >
                 <Plus className="w-5 h-5" />
