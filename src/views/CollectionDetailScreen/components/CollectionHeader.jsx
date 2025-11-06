@@ -13,8 +13,6 @@ export function CollectionHeader() {
   const { selectedCollection } = useSelector((state) => state.collection);
   const { collectionId } = useParams();
 
-  console.log('Selected Collection in Header:', selectedCollection);
-
   useEffect(() => {
     dispatch(fetchCollectionById(collectionId));
 
