@@ -9,7 +9,7 @@ import TestListSkeleton from '@/components/Skeletons/TestListSkeleton';
 import QR from 'query-string';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-const DEFAULT_PAGE_SIZE = 2;
+const DEFAULT_PAGE_SIZE = 8;
 
 export default function TestsScreen() {
   const dispatch = useDispatch();
@@ -77,7 +77,7 @@ export default function TestsScreen() {
 
         <div className="bg-bgSecondary shadow-lg pb-4">
           {loading ? (
-            <TestListSkeleton count={4} />
+            <TestListSkeleton count={8} />
           ) : listTest.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-8  p-4 md:p-6">
               {listTest.map((test) => (
