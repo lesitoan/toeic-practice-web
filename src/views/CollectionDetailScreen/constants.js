@@ -22,11 +22,11 @@ export const LEARNING_MODES = [
     customClassName: 'bg-gradient-to-br from-orange-400 to-orange-600',
   },
   {
-    name: 'Bài quiz',
+    name: 'Trắc nghiệm',
     description: 'Kiểm tra kiến thức',
     icon: Zap,
-    url: '/quiz',
-    isActive: false,
+    url: '/word-quiz',
+    isActive: true,
     customClassName: 'bg-gradient-to-br from-blue-400 to-blue-600',
   },
   {
