@@ -62,7 +62,9 @@ export default function QuestionNavigation({ currentQuestion, jumpToQuestion, ti
         </div>
 
         <div className="flex items-center justify-between mb-4">
-          <button className="text-sm text-blue-600 hover:text-blue-800">Nộp bài</button>
+          <button className="text-lg text-white hover:bg-green-400 w-full bg-green-600 py-2 rounded-lg">
+            Nộp bài
+          </button>
         </div>
       </div>
 
