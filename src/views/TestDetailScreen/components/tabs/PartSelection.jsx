@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Play } from 'lucide-react';
 import { Button } from '@nextui-org/react';
 import { useRouter, useParams } from 'next/navigation';
@@ -8,12 +8,44 @@ export default function PartSelection() {
   const router = useRouter();
   const params = useParams();
   const [selectedParts, setSelectedParts] = useState([]);
+  const [testResult, setTestResult] = useState(null);
 
   const handlePartSelect = (partId) => {
     setSelectedParts((prev) =>
       prev.includes(partId) ? prev.filter((id) => id !== partId) : [...prev, partId]
     );
   };
+
+  const handleStartTest = () => {
+    if (selectedParts.length === 0) return;
+
+    // Mở tab mới với route thi
+    window.open(
+      `/tests/${params.testSlug}/start?parts=${selectedParts.join(',')}`,
+      '_blank',
+      'width=1920,height=1080'
+    );
+  };
+
+  // Nếu có kết quả, hiển thị kết quả
+  if (testResult) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        {/* Component hiển thị kết quả (copy từ artifact) */}
+      </div>
+    );
+  }
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data.type === 'TEST_SUBMIT') {
+        setTestResult(event.data.result);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -105,7 +137,7 @@ export default function PartSelection() {
             )}
           </div>
           <Button
-            onPress={() => router.push(`/tests/${params.testSlug}/start`)}
+            onPress={handleStartTest}
             className={`${selectedParts.length > 0 ? 'hover:bg-blue-700 cursor-pointer' : 'opacity-80 cursor-not-allowed'} bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2`}
             disabled={selectedParts.length === 0}
           >
