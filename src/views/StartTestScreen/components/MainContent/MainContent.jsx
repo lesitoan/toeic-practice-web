@@ -1,82 +1,156 @@
 import { ArrowLeft, ArrowRight, Volume2 } from 'lucide-react';
-import { parts, sampleQuestions } from '../../constants';
 
 export default function MainContent({
   currentQuestion,
   answers,
   handleAnswer,
   setCurrentQuestion,
+  questionsByPosition,
+  totalQuestions,
+  testSessionSelected,
 }) {
-  const getCurrentPart = (questionNum) => {
-    return parts.find((part) => questionNum >= parts.startQ && questionNum <= part.endQ);
+  // Get current question data
+  const questionData = questionsByPosition[currentQuestion];
+
+  // Get all question positions sorted
+  const questionPositions = Object.keys(questionsByPosition)
+    .map(Number)
+    .sort((a, b) => a - b);
+
+  const getCurrentPart = (position) => {
+    if (!questionData) return null;
+    const partNumber = questionData.part;
+    return {
+      id: partNumber,
+      name: `Part ${partNumber}`,
+      type: partNumber <= 4 ? 'Listening' : 'Reading',
+    };
+  };
+
+  const getNextQuestionPosition = () => {
+    const currentIndex = questionPositions.indexOf(currentQuestion);
+    if (currentIndex < questionPositions.length - 1) {
+      return questionPositions[currentIndex + 1];
+    }
+    return currentQuestion;
+  };
+
+  const getPrevQuestionPosition = () => {
+    const currentIndex = questionPositions.indexOf(currentQuestion);
+    if (currentIndex > 0) {
+      return questionPositions[currentIndex - 1];
+    }
+    return currentQuestion;
   };
 
   const nextQuestion = () => {
-    if (currentQuestion < 200) {
-      setCurrentQuestion(currentQuestion + 1);
+    const nextPos = getNextQuestionPosition();
+    if (nextPos !== currentQuestion) {
+      setCurrentQuestion(nextPos);
     }
   };
 
   const prevQuestion = () => {
-    if (currentQuestion > 1) {
-      setCurrentQuestion(currentQuestion - 1);
+    const prevPos = getPrevQuestionPosition();
+    if (prevPos !== currentQuestion) {
+      setCurrentQuestion(prevPos);
     }
   };
 
   const renderCurrentQuestion = () => {
-    const question = sampleQuestions[currentQuestion];
     const currentPart = getCurrentPart(currentQuestion);
 
-    if (!question) {
+    if (!questionData) {
       return (
         <div className="text-center p-8">
-          <p className="text-gray-600 mb-4">Câu hỏi số {currentQuestion}</p>
-          <p className="text-sm text-gray-500">
-            {currentPart?.name} - {currentPart?.type}
-          </p>
+          <p className="text-gray-600 mb-4">Đang tải câu hỏi...</p>
         </div>
       );
     }
 
+    const passage = questionData.passage;
+    const requiresPassage = questionData.requires_passage;
+    const questionAnswers = questionData.answers || [];
+    const isListeningPart = questionData.part <= 4;
+
     return (
       <div className="p-6">
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{currentQuestion}.</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Câu {questionData.position}.
+          </h3>
 
-          {question.type === 'image' && (
+          {/* Render passage if required or if it's a listening part with audio */}
+          {(requiresPassage || (isListeningPart && passage?.type === 'AUDIO')) && passage && (
             <div className="mb-6">
-              <img
-                src={question.image}
-                alt="TOEIC Question"
-                className="max-w-full h-64 object-cover rounded-lg"
-              />
+              {passage.type === 'IMAGE' && (
+                <div className="mb-6">
+                  {passage.public_id ? (
+                    <img
+                      src={passage.public_id}
+                      alt="TOEIC Question"
+                      className="max-w-full h-64 object-contain rounded-lg border"
+                    />
+                  ) : (
+                    <div className="bg-gray-100 rounded-lg p-6 text-center">
+                      <p className="text-gray-600">Hình ảnh sẽ được hiển thị tại đây</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {passage.type === 'AUDIO' && (
+                <div className="bg-gray-100 rounded-lg p-6 mb-6">
+                  <div className="flex items-center justify-center gap-4">
+                    <Volume2 className="w-6 h-6 text-gray-600" />
+                    <p className="text-gray-700">
+                      {passage.public_id
+                        ? 'Audio sẽ được phát tự động'
+                        : 'Audio sẽ được phát tự động'}
+                    </p>
+                  </div>
+                  {passage.content_preview && (
+                    <div className="mt-4 p-4 bg-white rounded text-sm text-gray-600">
+                      {passage.content_preview}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {passage.type === 'TEXT' && (
+                <div className="mb-6 bg-gray-50 rounded-lg p-6 border">
+                  {passage.content ? (
+                    <div className="whitespace-pre-wrap text-gray-900">{passage.content}</div>
+                  ) : passage.content_preview ? (
+                    <div className="whitespace-pre-wrap text-gray-900">
+                      {passage.content_preview}
+                    </div>
+                  ) : (
+                    <p className="text-gray-600">Nội dung passage sẽ được hiển thị tại đây</p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
-          {question.type === 'audio' && (
-            <div className="bg-gray-100 rounded-lg p-6 mb-6">
-              <div className="flex items-center justify-center gap-4">
-                <Volume2 className="w-6 h-6 text-gray-600" />
-                <p className="text-gray-700">Audio will be played automatically</p>
-              </div>
-            </div>
-          )}
-
-          {question.question && (
+          {/* Render question content */}
+          {questionData.content && (
             <div className="mb-6">
-              <p className="text-lg text-gray-900">{question.question}</p>
+              <p className="text-lg text-gray-900">{questionData.content}</p>
             </div>
           )}
         </div>
 
+        {/* Render answers */}
         <div className="space-y-3">
-          {question.options.map((option, index) => {
+          {questionAnswers.map((answer, index) => {
             const optionKey = String.fromCharCode(65 + index);
-            const isSelected = answers[currentQuestion] === optionKey;
+            const isSelected = answers[currentQuestion] === answer.id?.toString() || 
+                             answers[currentQuestion] === optionKey;
 
             return (
               <label
-                key={index}
+                key={answer.id || index}
                 className={`flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors ${
                   isSelected ? 'bg-blue-50 border-blue-300' : 'border-gray-200'
                 }`}
@@ -84,15 +158,13 @@ export default function MainContent({
                 <input
                   type="radio"
                   name={`question-${currentQuestion}`}
-                  value={optionKey}
+                  value={answer.id?.toString() || optionKey}
                   checked={isSelected}
                   onChange={(e) => handleAnswer(e.target.value)}
                   className="w-4 h-4 text-blue-600 mr-3"
                 />
                 <span className="text-gray-900">
-                  {typeof option === 'string' && option.includes('.')
-                    ? option
-                    : `${optionKey}. ${option}`}
+                  {optionKey}. {answer.text}
                 </span>
               </label>
             );
@@ -110,15 +182,17 @@ export default function MainContent({
           <div className="flex items-center gap-4">
             <button
               onClick={prevQuestion}
-              disabled={currentQuestion === 1}
+              disabled={getPrevQuestionPosition() === currentQuestion}
               className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-50"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <span className="font-semibold text-gray-900">Câu {currentQuestion} / 200</span>
+            <span className="font-semibold text-gray-900">
+              Câu {currentQuestion} / {totalQuestions}
+            </span>
             <button
               onClick={nextQuestion}
-              disabled={currentQuestion === 200}
+              disabled={getNextQuestionPosition() === currentQuestion}
               className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-50"
             >
               <ArrowRight className="w-4 h-4" />
@@ -139,7 +213,7 @@ export default function MainContent({
         <div className="flex justify-between items-center">
           <button
             onClick={prevQuestion}
-            disabled={currentQuestion === 1}
+            disabled={getPrevQuestionPosition() === currentQuestion}
             className="flex items-center gap-2 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -147,12 +221,12 @@ export default function MainContent({
           </button>
 
           <div className="text-sm text-gray-600">
-            Đã trả lời: {Object.keys(answers).length} / 200
+            Đã trả lời: {Object.keys(answers).length} / {totalQuestions}
           </div>
 
           <button
             onClick={nextQuestion}
-            disabled={currentQuestion === 200}
+            disabled={getNextQuestionPosition() === currentQuestion}
             className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
             Câu tiếp theo

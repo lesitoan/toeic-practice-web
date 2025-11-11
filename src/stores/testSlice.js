@@ -1,11 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import testServices from '@/services/test.service';
 import { showErrorMessage } from '@/utils/common';
+import firebaseService from '@/services/firebase.service';
+import { select } from '@nextui-org/react';
 
 const initialState = {
   listTest: [],
   listTestForHomePage: [],
   selectedTest: null,
+  testSessionSelected: null,
+  idTokenSession: null, // lưu trữ idToken của phiên làm bài thi để gửi qua firebase
   filter: {
     page: 1,
     pageSize: 10,
@@ -19,6 +23,26 @@ export const fetchListTest = createAsyncThunk('test/fetchListTest', async (param
   try {
     const data = await testServices.getListTest(params);
     return data;
+  } catch (error) {
+    showErrorMessage(error.message);
+  }
+});
+
+export const fetchTestSession = createAsyncThunk('test/fetchTestSession', async (testId) => {
+  try {
+    // bắt đầu một phiên làm bài thi
+    const startSessionResponse = await testServices.startSession({ test_run_id: testId });
+    const { session_id: sessionId, firebase } = startSessionResponse || {};
+    if (!sessionId || !firebase) throw new Error('Không thể bắt đầu phiên làm bài thi');
+    const { custom_token: customToken } = firebase || {};
+    if (!customToken) throw new Error('Không thể lấy custom token từ firebase');
+
+    const idToken = await firebaseService.getIdToken(customToken);
+    if (!idToken) throw new Error('Không thể lấy id token từ firebase');
+
+    // lấy ra đề thi chi tiết theo session
+    const selectedTest = await testServices.getTestDetailBySession(sessionId);
+    return { idToken, selectedTest };
   } catch (error) {
     showErrorMessage(error.message);
   }
@@ -88,6 +112,20 @@ const testSlice = createSlice({
         }
       })
       .addCase(fetchListTestForHomePage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error?.message || 'Lỗi tải dữ liệu';
+      });
+    builder
+      .addCase(fetchTestSession.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTestSession.fulfilled, (state, action) => {
+        state.loading = false;
+        state.testSessionSelected = action.payload?.selectedTest || null;
+        state.idTokenSession = action.payload?.idToken || null;
+      })
+      .addCase(fetchTestSession.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error?.message || 'Lỗi tải dữ liệu';
       });
