@@ -1,147 +1,144 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
 import MainContent from './components/MainContent/MainContent';
 import QuestionNavigation from './components/QuestionNavigation/QuestionNavigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchTestSession } from '@/stores/testSlice';
+import firebaseService from '@/services/firebase.service';
+import testServices from '@/services/test.service';
+import { flattenQuestions } from '@/utils/flattenQuestions';
+import { toast } from 'react-toastify';
+import CradleLoader from '@/components/common/Loading/CradleLoader';
 
-export default function StartTestContent() {
+export default function StartTestContent({ testSlug }) {
+  const dispatch = useDispatch();
   const searchParams = useSearchParams();
   const selectedParts = searchParams.get('parts')?.split(',').map(Number) || [];
+  const { testSessionSelected, loading, idTokenSession } = useSelector((state) => state.test);
 
-  const [currentQuestion, setCurrentQuestion] = useState(1);
+  // làm phẳng câu hỏi
+  const { questions, questionsByPosition } = useMemo(
+    () => flattenQuestions(testSessionSelected),
+    [testSessionSelected]
+  );
+
+  const totalQuestions = questions.length;
+  const firstQuestionPosition = questions.length > 0 ? questions[0].position : 1;
+
+  const sessionId = useMemo(() => {
+    if (!testSessionSelected?.firebase?.session_path) return null;
+    const match = testSessionSelected.firebase.session_path.match(/\/test_sessions\/(\d+)/);
+    return match ? parseInt(match[1], 10) : null;
+  }, [testSessionSelected]);
+
+  const [currentQuestion, setCurrentQuestion] = useState(firstQuestionPosition);
   const [answers, setAnswers] = useState({});
   const [timeLeft, setTimeLeft] = useState(7200);
   const [warnings, setWarnings] = useState([]);
   const [showWarning, setShowWarning] = useState(false);
 
-  // Timer
   useEffect(() => {
-    let interval = null;
-    if (timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft((time) => time - 1);
-      }, 1000);
-    } else {
-      handleSubmit(true); // Auto submit khi hết giờ
+    const fakeTestSlug = 1;
+    dispatch(fetchTestSession(fakeTestSlug));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (questions.length > 0 && firstQuestionPosition && !questionsByPosition[currentQuestion]) {
+      setCurrentQuestion(firstQuestionPosition);
     }
-    return () => clearInterval(interval);
-  }, [timeLeft]);
+  }, [questions.length, firstQuestionPosition, currentQuestion, questionsByPosition]);
 
-  // Bảo mật & Giám sát
-  useEffect(() => {
-    const addWarning = (type) => {
-      const newWarning = { time: new Date().toLocaleTimeString(), type };
-      setWarnings((prev) => [...prev, newWarning]);
-      setShowWarning(true);
-      setTimeout(() => setShowWarning(false), 3000);
-    };
+  // Timer
+  // useEffect(() => {
+  //   let interval = null;
+  //   if (timeLeft > 0) {
+  //     interval = setInterval(() => {
+  //       setTimeLeft((time) => time - 1);
+  //     }, 1000);
+  //   } else {
+  //     handleSubmit(true); // Auto submit khi hết giờ
+  //   }
+  //   return () => clearInterval(interval);
+  // }, [timeLeft]);
 
-    // Cảnh báo khi đóng trang
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = '';
-    };
-
-    // Phát hiện rời chuột khỏi vùng làm bài
-    const handleMouseLeave = (e) => {
-      if (
-        e.clientY <= 0 ||
-        e.clientX <= 0 ||
-        e.clientX >= window.innerWidth ||
-        e.clientY >= window.innerHeight
-      ) {
-        addWarning('Rời khỏi vùng làm bài');
-      }
-    };
-
-    // Phát hiện chuyển tab
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        addWarning('Chuyển sang tab khác');
-      }
-    };
-
-    // Phát hiện thoát fullscreen
-    const handleFullscreenChange = () => {
-      if (!document.fullscreenElement) {
-        addWarning('Thoát chế độ toàn màn hình');
-      }
-    };
-
-    // Vào fullscreen
-    const requestFullscreen = () => {
-      document.documentElement.requestFullscreen?.().catch(console.log);
-    };
-
-    // Chặn right-click
-    const handleContextMenu = (e) => {
-      e.preventDefault();
-      addWarning('Cố gắng mở context menu');
-    };
-
-    // Chặn copy
-    const handleCopy = (e) => {
-      e.preventDefault();
-      addWarning('Cố gắng copy nội dung');
-    };
-
-    requestFullscreen();
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('contextmenu', handleContextMenu);
-    document.addEventListener('copy', handleCopy);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      document.removeEventListener('contextmenu', handleContextMenu);
-      document.removeEventListener('copy', handleCopy);
-    };
-  }, []);
-
-  const handleAnswer = (answer) => {
+  const handleAnswer = async (answer) => {
     setAnswers({ ...answers, [currentQuestion]: answer });
+    if (!sessionId || !idTokenSession) {
+      toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
+      return;
+    }
+
+    try {
+      const questionData = questionsByPosition[currentQuestion];
+      if (!questionData) {
+        toast.warning('Không tìm thấy dữ liệu câu hỏi hiện tại. hãy thử lại sau.');
+        return;
+      }
+
+      const questionId = questionData.id;
+      const answerId = typeof answer === 'string' ? parseInt(answer, 10) : answer;
+      if (!questionId || !answerId || isNaN(answerId)) {
+        toast.warning('Dữ liệu câu trả lời không hợp lệ. Vui lòng thử lại.');
+        return;
+      }
+
+      await firebaseService.updateAnswer(sessionId, questionId, answerId, idTokenSession);
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi lưu câu trả lời. Vui lòng thử lại.');
+    }
   };
 
-  const handleSubmit = (autoSubmit = false) => {
+  const handleSubmit = async (autoSubmit = false) => {
     const message = autoSubmit
       ? 'Hết giờ! Bài thi sẽ được nộp tự động.'
       : 'Bạn có chắc muốn nộp bài?';
 
     if (autoSubmit || window.confirm(message)) {
-      // Tính điểm (fake)
-      const answeredCount = Object.keys(answers).length;
-      const correctCount = Math.floor(answeredCount * 0.7);
-      const score = Math.round((correctCount / 200) * 990);
+      try {
+        if (!sessionId) {
+          console.error('Session ID is missing');
+          alert('Có lỗi xảy ra. Vui lòng thử lại.');
+          return;
+        }
+        const data = await testServices.submitTestSession(sessionId);
+        console.log('Submit test session response data:', data);
 
-      const result = {
-        answers,
-        warnings,
-        submittedAt: new Date().toISOString(),
-        timeSpent: 7200 - timeLeft,
-        stats: {
-          totalQuestions: 200,
-          answeredCount,
-          correctCount,
-          score,
-          listeningScore: Math.round(score * 0.5),
-          readingScore: Math.round(score * 0.5),
-        },
-      };
+        // Gửi kết quả về parent window để hiển thị popup
+        if (window.opener && !window.opener.closed) {
+          window.opener.postMessage(
+            {
+              type: 'TEST_SUBMIT',
+              result: {
+                session_id: data?.session_id,
+                score: data?.score,
+                correct_count: data?.correct_count,
+                total_questions: data?.total_questions,
+                status: data?.status,
+                submitted_at: data?.submitted_at,
+              },
+            },
+            '*'
+          );
+        }
 
-      // Gửi kết quả về parent
-      if (window.opener) {
-        window.opener.postMessage({ type: 'TEST_SUBMIT', result }, '*');
+        setTimeout(() => {
+          window.close();
+        }, 500);
+      } catch (error) {
+        toast.error('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
       }
-
-      setTimeout(() => window.close(), 500);
     }
   };
+
+  if (loading || !testSessionSelected) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <CradleLoader size="xl" color="#4F46E5" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -159,7 +156,11 @@ export default function StartTestContent() {
           timeLeft={timeLeft}
           answers={answers}
           warnings={warnings}
-          onSubmit={() => handleSubmit(false)}
+          onSubmit={handleSubmit}
+          questions={questions}
+          questionsByPosition={questionsByPosition}
+          totalQuestions={totalQuestions}
+          testSessionSelected={testSessionSelected}
         />
 
         <MainContent
@@ -167,6 +168,9 @@ export default function StartTestContent() {
           answers={answers}
           handleAnswer={handleAnswer}
           setCurrentQuestion={setCurrentQuestion}
+          questionsByPosition={questionsByPosition}
+          totalQuestions={totalQuestions}
+          testSessionSelected={testSessionSelected}
         />
       </div>
     </div>

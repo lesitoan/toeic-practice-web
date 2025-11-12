@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Play } from 'lucide-react';
 import { Button } from '@nextui-org/react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { PARTS } from '../../constants';
 
-export default function PartSelection() {
-  const router = useRouter();
+export default function PartSelection({ onTestResult }) {
   const params = useParams();
   const [selectedParts, setSelectedParts] = useState([]);
-  const [testResult, setTestResult] = useState(null);
 
   const handlePartSelect = (partId) => {
     setSelectedParts((prev) =>
@@ -27,25 +25,16 @@ export default function PartSelection() {
     );
   };
 
-  // Nếu có kết quả, hiển thị kết quả
-  if (testResult) {
-    return (
-      <div className="bg-white rounded-xl shadow-lg p-8">
-        {/* Component hiển thị kết quả (copy từ artifact) */}
-      </div>
-    );
-  }
-
   useEffect(() => {
     const handleMessage = (event) => {
-      if (event.data.type === 'TEST_SUBMIT') {
-        setTestResult(event.data.result);
+      if (event.data?.type === 'TEST_SUBMIT' && onTestResult) {
+        onTestResult(event.data.result);
       }
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [onTestResult]);
 
   return (
     <div className="space-y-6">
