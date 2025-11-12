@@ -1,4 +1,4 @@
-import { BookOpen, FileText, MessageCircle, Volume2 } from 'lucide-react';
+import { BookOpen, FileText, MessageCircle, Volume2, History } from 'lucide-react';
 
 export default function TestNavigation({ activeTab, setActiveTab }) {
   return (
@@ -9,6 +9,7 @@ export default function TestNavigation({ activeTab, setActiveTab }) {
             { key: 'overview', label: 'Tổng quan', icon: BookOpen },
             { key: 'parts', label: 'Chọn phần thi', icon: FileText },
             { key: 'answers', label: 'Đáp án & Giải thích', icon: Volume2 },
+            { key: 'history', label: 'Lịch sử', icon: History },
             { key: 'comments', label: 'Bình luận', icon: MessageCircle },
           ].map(({ key, label, icon: Icon }) => (
             <button

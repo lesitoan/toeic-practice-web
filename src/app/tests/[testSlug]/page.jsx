@@ -1,5 +1,6 @@
 import TestDetailScreen from '@/views/TestDetailScreen';
 
-export default function TestDetailPage({ params }) {
-  return <TestDetailScreen testSlug={params.testSlug} />;
+export default async function TestDetailPage({ params }) {
+  const { testSlug } = await params;
+  return <TestDetailScreen testSlug={testSlug} />;
 }
