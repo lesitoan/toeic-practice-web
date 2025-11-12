@@ -15,8 +15,29 @@ export default function InitLayout({ children }) {
   const router = useRouter();
 
   const renderLayout = useCallback(() => {
-    const Layout = LAYOUT_CONFIG.find((item) => {
-      return item.pathname?.includes(pathname);
+
+    const sortedConfigs = [...LAYOUT_CONFIG].sort((a, b) => {
+      const aHasRegex = a.pathname?.some((p) => p instanceof RegExp);
+      const bHasRegex = b.pathname?.some((p) => p instanceof RegExp);
+      if (aHasRegex && !bHasRegex) return -1;
+      if (!aHasRegex && bHasRegex) return 1;
+      return 0;
+    });
+
+    const Layout = sortedConfigs.find((item) => {
+      if (!item.pathname) return false;
+      
+
+      return item.pathname.some((pattern) => {
+
+        if (pattern instanceof RegExp) {
+          return pattern.test(pathname);
+        }
+        if (typeof pattern === 'string') {
+          return pathname === pattern;
+        }
+        return false;
+      });
     });
 
     if (Layout) {

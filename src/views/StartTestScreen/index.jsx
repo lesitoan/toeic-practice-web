@@ -134,7 +134,7 @@ export default function StartTestContent({ testSlug }) {
 
   if (loading || !testSessionSelected) {
     return (
-      <div className="min-h-[80vh] bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <CradleLoader size="xl" color="#4F46E5" />
       </div>
     );
