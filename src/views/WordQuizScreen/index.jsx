@@ -78,7 +78,7 @@ export default function WordQuizScreen() {
 
     const isCorrect = answer === currentVocab.definition;
 
-    const audio = new Audio(isCorrect ? '/sounds/soundCorrect.mp3' : '/sounds/soundIncorrect.mp3');
+    const audio = new Audio(isCorrect ? '/sounds/correct.mp3' : '/sounds/incorrect.mp3');
     audio.play().catch((err) => {});
 
     if (isCorrect) {
