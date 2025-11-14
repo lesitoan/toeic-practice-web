@@ -33,6 +33,7 @@ const SignupForm = () => {
         name: data.name,
         email: data.email,
         password: data.password,
+        age: '2000-01-01',
       });
       if (res) {
         toast.success('Đăng ký tài khoản thành công!');

@@ -1,4 +1,6 @@
 import { Pause, Volume2 } from 'lucide-react';
+import PopupConfirmSubmit from '../PopupConfirmSubmit';
+import { useState } from 'react';
 
 const formatTime = (seconds) => {
   const hours = Math.floor(seconds / 3600);
@@ -21,6 +23,7 @@ export default function QuestionNavigation({
   testSessionSelected,
   onSubmit,
 }) {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   // Group questions by part
   const questionsByPart = {};
   if (questions) {
@@ -96,7 +99,7 @@ export default function QuestionNavigation({
 
         <div className="flex items-center justify-between mb-4">
           <button
-            onClick={onSubmit}
+            onClick={() => setIsPopupOpen(true)}
             className="text-lg text-white hover:bg-green-400 w-full bg-green-600 py-2 rounded-lg"
           >
             Nộp bài
@@ -144,6 +147,11 @@ export default function QuestionNavigation({
 
       {/* Question Grid */}
       <div className="space-y-4 h-[50vh] overflow-scroll">{renderQuestionGrid()}</div>
+      <PopupConfirmSubmit
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        onSubmit={onSubmit}
+      />
     </div>
   );
 }
