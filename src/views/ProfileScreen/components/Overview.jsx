@@ -9,6 +9,7 @@ import {
   Headphones,
 } from 'lucide-react';
 import { USER_DATA } from '../constants';
+import ActivityHeatmap from './ActivityHeatmap';
 
 const StatCard = ({ stat }) => (
   <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
@@ -58,6 +59,8 @@ const Overview = () => {
 
   return (
     <div className="space-y-8">
+      <ActivityHeatmap />
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
