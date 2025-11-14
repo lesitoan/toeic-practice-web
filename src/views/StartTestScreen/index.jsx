@@ -2,24 +2,33 @@
 import { useState, useEffect, Suspense, useMemo, use } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
+import { useCookies } from 'react-cookie';
 import MainContent from './components/MainContent/MainContent';
 import QuestionNavigation from './components/QuestionNavigation/QuestionNavigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTestSession } from '@/stores/testSlice';
+import { fetchTestSession, setTestData } from '@/stores/testSlice';
 import firebaseService from '@/services/firebase.service';
 import testServices from '@/services/test.service';
 import { flattenQuestions } from '@/utils/flattenQuestions';
 import { toast } from 'react-toastify';
 import CradleLoader from '@/components/common/Loading/CradleLoader';
-import { set } from 'lodash';
+import {
+  TEST_ID_TOKEN_NAME,
+  TEST_SESSION_COOKIE_NAME,
+  TEST_SESSION_EXPIRE_TIME_NAME,
+} from './constants';
 
 export default function StartTestScreen({ testSlug }) {
+  const [cookies, setCookie, removeCookie] = useCookies([
+    TEST_SESSION_COOKIE_NAME,
+    TEST_SESSION_EXPIRE_TIME_NAME,
+    TEST_ID_TOKEN_NAME,
+  ]);
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
   const selectedParts = searchParams.get('parts')?.split(',').map(Number) || [];
-  const { testSessionSelected, loading, idTokenSession, startTime, expireTime } = useSelector(
-    (state) => state.test
-  );
+  const { testSessionSelected, loading, idTokenSession, startTime, expireTime, selectedSessionId } =
+    useSelector((state) => state.test);
 
   // làm phẳng câu hỏi
   const { questions, questionsByPosition } = useMemo(
@@ -73,8 +82,53 @@ export default function StartTestScreen({ testSlug }) {
 
   useEffect(() => {
     const fakeTestSlug = 1;
-    dispatch(fetchTestSession(fakeTestSlug));
+    // lấy dữ liệu phiên làm bài thi từ cookie nếu có
+    async function fetchTestSessionFromCookie() {
+      try {
+        if (
+          cookies &&
+          cookies[TEST_SESSION_COOKIE_NAME] &&
+          cookies[TEST_SESSION_EXPIRE_TIME_NAME] &&
+          cookies[TEST_ID_TOKEN_NAME]
+        ) {
+          const testSessionSelectedDetail = await testServices.getTestDetailBySession(
+            cookies[TEST_SESSION_COOKIE_NAME]
+          );
+          if (!testSessionSelectedDetail) {
+            removeCookie(TEST_SESSION_COOKIE_NAME);
+            removeCookie(TEST_SESSION_EXPIRE_TIME_NAME);
+            removeCookie(TEST_ID_TOKEN_NAME);
+            return;
+          }
+          dispatch(
+            setTestData({
+              testSessionSelected: testSessionSelectedDetail,
+              expireTime: new Date(cookies[TEST_SESSION_EXPIRE_TIME_NAME]).getTime(),
+              idToken: cookies[TEST_ID_TOKEN_NAME],
+              sessionId: cookies[TEST_SESSION_COOKIE_NAME],
+            })
+          );
+          return;
+        }
+        dispatch(fetchTestSession(fakeTestSlug));
+      } catch (error) {
+        removeCookie(TEST_SESSION_COOKIE_NAME);
+        removeCookie(TEST_SESSION_EXPIRE_TIME_NAME);
+        removeCookie(TEST_ID_TOKEN_NAME);
+      }
+    }
+    fetchTestSessionFromCookie();
   }, [dispatch]);
+
+  useEffect(() => {
+    if (testSessionSelected) {
+      setCookie(TEST_SESSION_COOKIE_NAME, selectedSessionId, { expires: new Date(expireTime) });
+      setCookie(TEST_SESSION_EXPIRE_TIME_NAME, expireTime.toString(), {
+        expires: new Date(expireTime),
+      });
+      setCookie(TEST_ID_TOKEN_NAME, idTokenSession, { expires: new Date(expireTime) });
+    }
+  }, [testSessionSelected]);
 
   useEffect(() => {
     if (questions.length > 0 && firstQuestionPosition && !questionsByPosition[currentQuestion]) {
@@ -143,6 +197,15 @@ export default function StartTestScreen({ testSlug }) {
         return;
       }
       const data = await testServices.submitTestSession(sessionId);
+      if (!data) {
+        alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+        return;
+      }
+
+      // xóa cookie phiên làm bài thi
+      removeCookie(TEST_SESSION_COOKIE_NAME);
+      removeCookie(TEST_SESSION_EXPIRE_TIME_NAME);
+      removeCookie(TEST_ID_TOKEN_NAME);
 
       // Gửi kết quả về parent window để hiển thị popup
       if (window.opener && !window.opener.closed) {
@@ -160,21 +223,36 @@ export default function StartTestScreen({ testSlug }) {
           },
           '*'
         );
+        setTimeout(() => {
+          window.close();
+        }, 500);
+      } else {
+        window.location.href = `/tests/${testSlug}`;
       }
-
-      setTimeout(() => {
-        window.close();
-      }, 500);
     } catch (error) {
       toast.error('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
     } finally {
     }
   };
 
-  if (loading || !testSessionSelected) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <CradleLoader size="xl" color="#4F46E5" />
+      </div>
+    );
+  } else if (!testSessionSelected) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">
+            Không Tìm Thấy Phiên Làm Bài Thi
+          </h2>
+          <p className="text-gray-600 leading-relaxed">
+            Phiên làm bài thi không tồn tại hoặc đã hết hạn. Vui lòng bắt đầu một phiên làm bài thi
+            mới.
+          </p>
+        </div>
       </div>
     );
   }
