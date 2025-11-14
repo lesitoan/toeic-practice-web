@@ -8,6 +8,16 @@ import PopupFinishLearnCard from '@/components/popup/PopupFinishLearnCard';
 import CradleLoader from '@/components/common/Loading/CradleLoader';
 import { AlertCircle, ArrowLeft, Home } from 'lucide-react';
 
+const shuffleArray = (array) => {
+  if (!Array.isArray(array)) return [];
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+};
+
 export default function FlashCardPlayScreen() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -25,7 +35,11 @@ export default function FlashCardPlayScreen() {
 
   useEffect(() => {
     if (vocabularies && vocabularies.length > 0) {
-      setListVocabularies(vocabularies);
+      setListVocabularies(shuffleArray(vocabularies));
+      setCurrentVocabularyIndex(0);
+    } else {
+      setListVocabularies([]);
+      setCurrentVocabularyIndex(0);
     }
   }, [vocabularies]);
 
@@ -46,6 +60,12 @@ export default function FlashCardPlayScreen() {
     audio.play().catch((err) => {});
 
     setIsPopupVisible(true);
+  };
+
+  const handleRestart = () => {
+    setIsPopupVisible(false);
+    setListVocabularies(shuffleArray(vocabularies));
+    setCurrentVocabularyIndex(0);
   };
 
   if (loading) {
@@ -116,8 +136,7 @@ export default function FlashCardPlayScreen() {
       {isPopupVisible && (
         <PopupFinishLearnCard
           onRestart={() => {
-            setIsPopupVisible(false);
-            setCurrentVocabularyIndex(0);
+            handleRestart();
           }}
           onGoBack={() => {
             setIsPopupVisible(false);
