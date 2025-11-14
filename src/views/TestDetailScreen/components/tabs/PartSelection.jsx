@@ -6,12 +6,12 @@ import { PARTS } from '../../constants';
 
 export default function PartSelection({ onTestResult }) {
   const params = useParams();
-  const [selectedParts, setSelectedParts] = useState([]);
+  const [selectedParts, setSelectedParts] = useState([1, 2, 3, 4, 5, 6, 7]);
 
   const handlePartSelect = (partId) => {
-    setSelectedParts((prev) =>
-      prev.includes(partId) ? prev.filter((id) => id !== partId) : [...prev, partId]
-    );
+    // setSelectedParts((prev) =>
+    //   prev.includes(partId) ? prev.filter((id) => id !== partId) : [...prev, partId]
+    // );
   };
 
   const handleStartTest = () => {
@@ -41,7 +41,7 @@ export default function PartSelection({ onTestResult }) {
       <div className="bg-white p-6 rounded-xl shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">Chọn phần thi muốn luyện tập</h2>
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             <button
               onClick={() => setSelectedParts(PARTS.map((p) => p.id))}
               className="px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
@@ -54,7 +54,7 @@ export default function PartSelection({ onTestResult }) {
             >
               Bỏ chọn tất cả
             </button>
-          </div>
+          </div> */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -62,7 +62,7 @@ export default function PartSelection({ onTestResult }) {
             <div
               key={part.id}
               onClick={() => handlePartSelect(part.id)}
-              className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+              className={`p-4 rounded-lg border-2 transition-all ${
                 selectedParts.includes(part.id)
                   ? 'border-blue-500 bg-blue-50'
                   : 'border-gray-200 hover:border-gray-300'
