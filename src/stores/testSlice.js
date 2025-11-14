@@ -8,6 +8,8 @@ const initialState = {
   listTestForHomePage: [],
   selectedTest: null,
   testSessionSelected: null,
+  startTime: null, // lưu trữ thời gian bắt đầu phiên làm bài thi
+  expireTime: null, // lưu trữ thời gian kết thúc phiên làm bài thi
   idTokenSession: null, // lưu trữ idToken của phiên làm bài thi để gửi qua firebase
   filter: {
     page: 1,
@@ -31,7 +33,12 @@ export const fetchTestSession = createAsyncThunk('test/fetchTestSession', async 
   try {
     // bắt đầu một phiên làm bài thi
     const startSessionResponse = await testServices.startSession({ test_run_id: testId });
-    const { session_id: sessionId, firebase } = startSessionResponse || {};
+    const {
+      session_id: sessionId,
+      firebase,
+      planned_start,
+      planned_expire,
+    } = startSessionResponse || {};
     if (!sessionId || !firebase) throw new Error('Không thể bắt đầu phiên làm bài thi');
     const { custom_token: customToken } = firebase || {};
     if (!customToken) throw new Error('Không thể lấy custom token từ firebase');
@@ -39,9 +46,14 @@ export const fetchTestSession = createAsyncThunk('test/fetchTestSession', async 
     const idToken = await firebaseService.getIdToken(customToken);
     if (!idToken) throw new Error('Không thể lấy id token từ firebase');
 
+    // tính toán thời gian bắt đầu và kết thúc phiên làm bài thi
+    const currentTime = Date.now();
+    const startTime = currentTime;
+    const expireTime = planned_expire ? new Date(planned_expire).getTime() : currentTime;
+
     // lấy ra đề thi chi tiết theo session
     const selectedTest = await testServices.getTestDetailBySession(sessionId);
-    return { idToken, selectedTest };
+    return { idToken, selectedTest, startTime, expireTime };
   } catch (error) {
     showErrorMessage(error.message);
   }
@@ -123,6 +135,8 @@ const testSlice = createSlice({
         state.loading = false;
         state.testSessionSelected = action.payload?.selectedTest || null;
         state.idTokenSession = action.payload?.idToken || null;
+        state.startTime = action.payload?.startTime || null;
+        state.expireTime = action.payload?.expireTime || null;
       })
       .addCase(fetchTestSession.rejected, (state, action) => {
         state.loading = false;

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, Suspense, useMemo } from 'react';
+import { useState, useEffect, Suspense, useMemo, use } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
 import MainContent from './components/MainContent/MainContent';
@@ -11,12 +11,15 @@ import testServices from '@/services/test.service';
 import { flattenQuestions } from '@/utils/flattenQuestions';
 import { toast } from 'react-toastify';
 import CradleLoader from '@/components/common/Loading/CradleLoader';
+import { set } from 'lodash';
 
-export default function StartTestContent({ testSlug }) {
+export default function StartTestScreen({ testSlug }) {
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
   const selectedParts = searchParams.get('parts')?.split(',').map(Number) || [];
-  const { testSessionSelected, loading, idTokenSession } = useSelector((state) => state.test);
+  const { testSessionSelected, loading, idTokenSession, startTime, expireTime } = useSelector(
+    (state) => state.test
+  );
 
   // làm phẳng câu hỏi
   const { questions, questionsByPosition } = useMemo(
@@ -27,17 +30,46 @@ export default function StartTestContent({ testSlug }) {
   const totalQuestions = questions.length;
   const firstQuestionPosition = questions.length > 0 ? questions[0].position : 1;
 
+  const [currentQuestion, setCurrentQuestion] = useState(firstQuestionPosition);
+  const [answers, setAnswers] = useState({});
+  const [timeLeft, setTimeLeft] = useState(7200);
+  const [warnings, setWarnings] = useState([]);
+  const [showWarning, setShowWarning] = useState(false);
+
   const sessionId = useMemo(() => {
     if (!testSessionSelected?.firebase?.session_path) return null;
     const match = testSessionSelected.firebase.session_path.match(/\/test_sessions\/(\d+)/);
     return match ? parseInt(match[1], 10) : null;
   }, [testSessionSelected]);
 
-  const [currentQuestion, setCurrentQuestion] = useState(firstQuestionPosition);
-  const [answers, setAnswers] = useState({});
-  const [timeLeft, setTimeLeft] = useState(7200);
-  const [warnings, setWarnings] = useState([]);
-  const [showWarning, setShowWarning] = useState(false);
+  useEffect(() => {
+    const getPreviousAnswers = async () => {
+      try {
+        if (!sessionId || !idTokenSession) return;
+        const previousAnswers = await firebaseService.getAnswers(sessionId, idTokenSession);
+        if (!previousAnswers || Object.keys(previousAnswers).length === 0) return;
+
+        const positionAnswers = {};
+        Object.entries(previousAnswers).forEach(([questionIdKey, ans]) => {
+          const questionId = parseInt(questionIdKey, 10);
+          if (isNaN(questionId)) return;
+
+          const entry = Object.entries(questionsByPosition).find(([, q]) => q?.id === questionId);
+          if (entry) {
+            const position = parseInt(entry[0], 10);
+            const answerVal = ans != null ? String(ans) : ans;
+            positionAnswers[position] = answerVal;
+          }
+        });
+        if (Object.keys(positionAnswers).length > 0) {
+          setAnswers((prev) => ({ ...prev, ...positionAnswers }));
+        }
+      } catch (error) {
+        // toast.error('Có lỗi xảy ra khi tải câu trả lời trước đó. Vui lòng thử lại.');
+      }
+    };
+    getPreviousAnswers();
+  }, [sessionId, idTokenSession, questionsByPosition]);
 
   useEffect(() => {
     const fakeTestSlug = 1;
@@ -50,25 +82,38 @@ export default function StartTestContent({ testSlug }) {
     }
   }, [questions.length, firstQuestionPosition, currentQuestion, questionsByPosition]);
 
+  useEffect(() => {
+    if (startTime && expireTime) {
+      setTimeLeft(Math.floor((expireTime - startTime) / 1000));
+    }
+  }, [startTime, expireTime]);
+
   // Timer
-  // useEffect(() => {
-  //   let interval = null;
-  //   if (timeLeft > 0) {
-  //     interval = setInterval(() => {
-  //       setTimeLeft((time) => time - 1);
-  //     }, 1000);
-  //   } else {
-  //     handleSubmit(true); // Auto submit khi hết giờ
-  //   }
-  //   return () => clearInterval(interval);
-  // }, [timeLeft]);
+  useEffect(() => {
+    let interval = null;
+
+    if (timeLeft === 120) {
+      window.alert('Còn 2 phút nữa là hết giờ làm bài!');
+    }
+
+    if (timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((time) => time - 1);
+      }, 1000);
+    } else {
+      window.alert('Thời gian đã hết, hệ thống sẽ tự động nộp bài!');
+      handleSubmit(true);
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [timeLeft, sessionId]);
 
   const handleAnswer = async (answer) => {
-    setAnswers({ ...answers, [currentQuestion]: answer });
     if (!sessionId || !idTokenSession) {
       toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
       return;
     }
+    setAnswers({ ...answers, [currentQuestion]: answer });
 
     try {
       const questionData = questionsByPosition[currentQuestion];
@@ -91,44 +136,38 @@ export default function StartTestContent({ testSlug }) {
   };
 
   const handleSubmit = async (autoSubmit = false) => {
-    const message = autoSubmit
-      ? 'Hết giờ! Bài thi sẽ được nộp tự động.'
-      : 'Bạn có chắc muốn nộp bài?';
-
-    if (autoSubmit || window.confirm(message)) {
-      try {
-        if (!sessionId) {
-          console.error('Session ID is missing');
-          alert('Có lỗi xảy ra. Vui lòng thử lại.');
-          return;
-        }
-        const data = await testServices.submitTestSession(sessionId);
-        console.log('Submit test session response data:', data);
-
-        // Gửi kết quả về parent window để hiển thị popup
-        if (window.opener && !window.opener.closed) {
-          window.opener.postMessage(
-            {
-              type: 'TEST_SUBMIT',
-              result: {
-                session_id: data?.session_id,
-                score: data?.score,
-                correct_count: data?.correct_count,
-                total_questions: data?.total_questions,
-                status: data?.status,
-                submitted_at: data?.submitted_at,
-              },
-            },
-            '*'
-          );
-        }
-
-        setTimeout(() => {
-          window.close();
-        }, 500);
-      } catch (error) {
-        toast.error('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+    try {
+      if (!sessionId) {
+        console.error('Session ID is missing');
+        alert('Có lỗi xảy ra. Vui lòng thử lại.');
+        return;
       }
+      const data = await testServices.submitTestSession(sessionId);
+
+      // Gửi kết quả về parent window để hiển thị popup
+      if (window.opener && !window.opener.closed) {
+        window.opener.postMessage(
+          {
+            type: 'TEST_SUBMIT',
+            result: {
+              session_id: data?.session_id,
+              score: data?.score,
+              correct_count: data?.correct_count,
+              total_questions: data?.total_questions,
+              status: data?.status,
+              submitted_at: data?.submitted_at,
+            },
+          },
+          '*'
+        );
+      }
+
+      setTimeout(() => {
+        window.close();
+      }, 500);
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+    } finally {
     }
   };
 
