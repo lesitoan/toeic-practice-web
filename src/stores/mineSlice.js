@@ -13,12 +13,8 @@ const initialState = {
 };
 
 export const mineProfile = createAsyncThunk('mine/mineProfile', async (_, { dispatch }) => {
-  try {
-    const data = await profileServices.getMe();
-    return data;
-  } catch (error) {
-    showErrorMessage(error.message);
-  }
+  const data = await profileServices.getMe();
+  return data;
 });
 
 const mineSlice = createSlice({
@@ -50,9 +46,17 @@ const mineSlice = createSlice({
         state.loading = true;
       })
       .addCase(mineProfile.rejected, (state) => {
+        console.log('reject mine profile');
         state.loading = false;
+        state.isAuthenticated = false;
+        state.userProfile = null;
       })
       .addCase(mineProfile.fulfilled, (state, action) => {
+        if (action.payload.role_id !== 3) {
+          state.isAuthenticated = false;
+          state.userProfile = null;
+          return;
+        }
         // match role
         // if (action.payload?.role_id === 3) {
         //   action.payload.role = ROLE.USER_FREE;
