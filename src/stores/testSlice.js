@@ -11,6 +11,7 @@ const initialState = {
   startTime: null, // lưu trữ thời gian bắt đầu phiên làm bài thi
   expireTime: null, // lưu trữ thời gian kết thúc phiên làm bài thi
   idTokenSession: null, // lưu trữ idToken của phiên làm bài thi để gửi qua firebase
+  selectedSessionId: null, // lưu trữ idToken của phiên làm bài thi để gửi qua firebase
   filter: {
     page: 1,
     pageSize: 10,
@@ -53,7 +54,7 @@ export const fetchTestSession = createAsyncThunk('test/fetchTestSession', async 
 
     // lấy ra đề thi chi tiết theo session
     const selectedTest = await testServices.getTestDetailBySession(sessionId);
-    return { idToken, selectedTest, startTime, expireTime };
+    return { idToken, selectedTest, startTime, expireTime, sessionId };
   } catch (error) {
     showErrorMessage(error.message);
   }
@@ -89,6 +90,13 @@ const testSlice = createSlice({
     },
     setSelectedTest: (state, action) => {
       state.selectedTest = action.payload;
+    },
+    setTestData: (state, action) => {
+      state.testSessionSelected = action.payload.testSessionSelected;
+      state.startTime = Date.now();
+      state.expireTime = action.payload.expireTime;
+      state.idTokenSession = action.payload.idToken;
+      state.selectedSessionId = action.payload.sessionId;
     },
   },
   extraReducers: (builder) => {
@@ -137,6 +145,7 @@ const testSlice = createSlice({
         state.idTokenSession = action.payload?.idToken || null;
         state.startTime = action.payload?.startTime || null;
         state.expireTime = action.payload?.expireTime || null;
+        state.selectedSessionId = action.payload?.sessionId || null;
       })
       .addCase(fetchTestSession.rejected, (state, action) => {
         state.loading = false;
@@ -145,5 +154,5 @@ const testSlice = createSlice({
   },
 });
 
-export const { setLoading, setError, setFilter, setSelectedTest } = testSlice.actions;
+export const { setLoading, setError, setFilter, setSelectedTest, setTestData } = testSlice.actions;
 export default testSlice;

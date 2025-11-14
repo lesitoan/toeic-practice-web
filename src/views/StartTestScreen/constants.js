@@ -438,3 +438,7 @@ export const TEST_DEMO = {
     },
   ],
 };
+
+export const TEST_SESSION_COOKIE_NAME = 'test_session_id';
+export const TEST_SESSION_EXPIRE_TIME_NAME = 'test_session_expire_time';
+export const TEST_ID_TOKEN_NAME = 'test_id_token';
