@@ -24,6 +24,15 @@ const firebaseService = {
     const url = `${firebaseUrl}/test_sessions/${sessionId}/answers.json?auth=${idToken}`;
     return axios.patch(url, { [questionId]: answerId });
   },
+
+  getAnswers: async (sessionId, idToken) => {
+    if (!firebaseUrl || !sessionId || !idToken) {
+      throw new Error('Missing required parameters for getAnswers');
+    }
+    const url = `${firebaseUrl}/test_sessions/${sessionId}/answers.json?auth=${idToken}`;
+    const response = await axios.get(url);
+    return response?.data || {};
+  },
 };
 
 export default firebaseService;

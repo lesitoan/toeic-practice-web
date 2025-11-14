@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, Suspense, useMemo } from 'react';
+import { useState, useEffect, Suspense, useMemo, use } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
 import MainContent from './components/MainContent/MainContent';
@@ -41,6 +41,35 @@ export default function StartTestScreen({ testSlug }) {
     const match = testSessionSelected.firebase.session_path.match(/\/test_sessions\/(\d+)/);
     return match ? parseInt(match[1], 10) : null;
   }, [testSessionSelected]);
+
+  useEffect(() => {
+    const getPreviousAnswers = async () => {
+      try {
+        if (!sessionId || !idTokenSession) return;
+        const previousAnswers = await firebaseService.getAnswers(sessionId, idTokenSession);
+        if (!previousAnswers || Object.keys(previousAnswers).length === 0) return;
+
+        const positionAnswers = {};
+        Object.entries(previousAnswers).forEach(([questionIdKey, ans]) => {
+          const questionId = parseInt(questionIdKey, 10);
+          if (isNaN(questionId)) return;
+
+          const entry = Object.entries(questionsByPosition).find(([, q]) => q?.id === questionId);
+          if (entry) {
+            const position = parseInt(entry[0], 10);
+            const answerVal = ans != null ? String(ans) : ans;
+            positionAnswers[position] = answerVal;
+          }
+        });
+        if (Object.keys(positionAnswers).length > 0) {
+          setAnswers((prev) => ({ ...prev, ...positionAnswers }));
+        }
+      } catch (error) {
+        // toast.error('Có lỗi xảy ra khi tải câu trả lời trước đó. Vui lòng thử lại.');
+      }
+    };
+    getPreviousAnswers();
+  }, [sessionId, idTokenSession, questionsByPosition]);
 
   useEffect(() => {
     const fakeTestSlug = 1;
