@@ -13,7 +13,7 @@ export default function TestCard({ test }) {
   return (
     <div className="bg-gray-700 rounded-lg p-4 border border-gray-700 hover:border-gray-600 hover:scale-105 transition-all duration-200 cursor-pointer">
       {/* Test Title */}
-      <h3 className="text-white font-semibold text-lg mb-3">{test?.name}</h3>
+      <h3 className="text-white font-semibold text-lg mb-3">{test?.name || test?.title}</h3>
 
       {/* Stats Row */}
       <div className="flex items-center gap-4 mb-3 text-gray-400 text-sm">

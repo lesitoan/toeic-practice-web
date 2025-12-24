@@ -3,7 +3,7 @@ import requestHelpers from '@/utils/requestHelper';
 
 const testServices = {
   getListTest: async (params) => {
-    return requestHelpers.get(PREFIX_SERVICES.test_service_v1, '/test-public', params);
+    return requestHelpers.get('/api/v1/test_run', '/public', params);
   },
   startSession: async (data) => {
     // bắt đầu một phiên làm bài thi

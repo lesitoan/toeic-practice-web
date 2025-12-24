@@ -81,7 +81,6 @@ export default function StartTestScreen({ testSlug }) {
   }, [sessionId, idTokenSession, questionsByPosition]);
 
   useEffect(() => {
-    const fakeTestSlug = 1;
     // lấy dữ liệu phiên làm bài thi từ cookie nếu có
     async function fetchTestSessionFromCookie() {
       try {
@@ -110,7 +109,7 @@ export default function StartTestScreen({ testSlug }) {
           );
           return;
         }
-        dispatch(fetchTestSession(fakeTestSlug));
+        dispatch(fetchTestSession(testSlug || 1));
       } catch (error) {
         removeCookie(TEST_SESSION_COOKIE_NAME);
         removeCookie(TEST_SESSION_EXPIRE_TIME_NAME);
@@ -241,21 +240,22 @@ export default function StartTestScreen({ testSlug }) {
         <CradleLoader size="xl" color="#4F46E5" />
       </div>
     );
-  } else if (!testSessionSelected) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-3">
-            Không Tìm Thấy Phiên Làm Bài Thi
-          </h2>
-          <p className="text-gray-600 leading-relaxed">
-            Phiên làm bài thi không tồn tại hoặc đã hết hạn. Vui lòng bắt đầu một phiên làm bài thi
-            mới.
-          </p>
-        </div>
-      </div>
-    );
   }
+  // else if (!testSessionSelected) {
+  //   return (
+  //     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+  //       <div className="text-center">
+  //         <h2 className="text-2xl font-bold text-gray-800 mb-3">
+  //           Không Tìm Thấy Phiên Làm Bài Thi
+  //         </h2>
+  //         <p className="text-gray-600 leading-relaxed">
+  //           Phiên làm bài thi không tồn tại hoặc đã hết hạn. Vui lòng bắt đầu một phiên làm bài thi
+  //           mới.
+  //         </p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-gray-50">
