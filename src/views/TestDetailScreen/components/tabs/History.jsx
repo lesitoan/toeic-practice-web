@@ -1,5 +1,13 @@
 import { useState } from 'react';
-import { Trophy, CheckCircle, Clock, Calendar, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  Trophy,
+  CheckCircle,
+  Clock,
+  Calendar,
+  TrendingUp,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
 import { Button } from '@nextui-org/react';
 
 export default function History({ testResults, testId }) {
@@ -63,7 +71,7 @@ export default function History({ testResults, testId }) {
               const percentage = calculatePercentage(result);
               const resultId = result.session_id || result.id || index;
               const isExpanded = expandedResultId === resultId;
-              
+
               return (
                 <div
                   key={resultId}
@@ -124,7 +132,7 @@ export default function History({ testResults, testId }) {
                       </div>
                       <Button
                         onClick={(e) => {
-                          e.stopPropagation();
+                          // e.stopPropagation();
                           setExpandedResultId(isExpanded ? null : resultId);
                         }}
                         className="bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
@@ -262,8 +270,6 @@ export default function History({ testResults, testId }) {
             })}
         </div>
       </div>
-
     </div>
   );
 }
-
