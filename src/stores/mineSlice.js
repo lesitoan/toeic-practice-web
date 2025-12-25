@@ -65,7 +65,7 @@ const mineSlice = createSlice({
         // }
 
         // fake role pro
-        action.payload.role = ROLE.USER_PRO;
+        action.payload.role = ROLE.USER_FREE;
 
         if (action.payload) {
           state.userProfile = action.payload;
