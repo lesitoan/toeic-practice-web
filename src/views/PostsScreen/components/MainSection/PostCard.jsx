@@ -39,7 +39,7 @@ export default function PostCard({ post }) {
 
         {/* Title */}
         <h3 className="text-lg font-semibold text-gray-900 mb-3 leading-tight">
-          <Link href={`/blog/${post.id}`} className="hover:text-blue-600 transition-colors">
+          <Link href={`/posts/${post.id}`} className="hover:text-blue-600 transition-colors">
             {post.title}
           </Link>
         </h3>
@@ -79,7 +79,7 @@ export default function PostCard({ post }) {
           </div>
 
           <Link
-            href={`/blog/${post.id}`}
+            href={`/posts/${post.id}`}
             className="text-blue-600 hover:text-blue-700 text-sm font-medium"
           >
             Read more →

@@ -4,7 +4,7 @@ export const NAVIGATE_ITEM = [
   { name: 'Đề thi online', href: '/tests' },
   { name: 'Flashcards', href: '/flashcards' },
   { name: 'Blog', href: '/posts' },
-  { name: 'Nâng cấp tài khoản', href: '/profile' },
+  { name: 'Nâng cấp tài khoản', href: '/pricing' },
 ];
 
 export const WEB_TITLE = 'TOEIC PRACTICE';

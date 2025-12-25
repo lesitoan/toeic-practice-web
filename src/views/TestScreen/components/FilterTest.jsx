@@ -6,7 +6,7 @@ import { Button, Input } from '@nextui-org/react';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { debounce } from 'lodash';
 
-export default function FilterTest({ filter, setFilter }) {
+export default function FilterTest() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();

@@ -1,8 +1,10 @@
 'use client';
 import React, { useState } from 'react';
 import { Check, Star, Zap, BookOpen, Users, Trophy, Clock, HeadphonesIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function PricingScreen() {
+  const router = useRouter();
   const [billingCycle, setBillingCycle] = useState('monthly');
 
   const plans = [
@@ -68,6 +70,16 @@ export default function PricingScreen() {
   const getDiscountPercent = (monthly, yearly) => {
     if (monthly === 0) return 0;
     return Math.round((1 - yearly / (monthly * 12)) * 100);
+  };
+
+  const handleSelectPlan = (plan) => {
+    // Navigate to checkout with plan details
+    const params = new URLSearchParams({
+      plan: plan.name,
+      price: plan.price[billingCycle].toString(),
+      billing: billingCycle,
+    });
+    router.push(`/checkout?${params.toString()}`);
   };
 
   return (
@@ -175,6 +187,8 @@ export default function PricingScreen() {
                   </div>
 
                   <button
+                    onClick={() => handleSelectPlan(plan)}
+                    disabled={plan.name === 'Basic'}
                     className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${plan.buttonStyle}`}
                   >
                     {plan.buttonText}
