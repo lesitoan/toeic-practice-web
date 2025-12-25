@@ -108,7 +108,7 @@ export default function QuestionNavigation({
       </div>
 
       {/* Audio Controls */}
-      <div className="bg-white rounded-lg p-3 mb-4">
+      {/* <div className="bg-white rounded-lg p-3 mb-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-gray-600">00:00</span>
           <div className="flex items-center gap-2">
@@ -119,7 +119,7 @@ export default function QuestionNavigation({
             <Pause className="w-4 h-4" />
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Part Tabs */}
       <div className="flex flex-wrap gap-2 mb-4">
