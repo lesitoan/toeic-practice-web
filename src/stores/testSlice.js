@@ -127,7 +127,11 @@ const testSlice = createSlice({
       .addCase(fetchListTestForHomePage.fulfilled, (state, action) => {
         state.loading = false;
         if (action.payload?.items) {
-          state.listTestForHomePage = action.payload?.items;
+          if(action.payload?.items.length > 8){
+            state.listTestForHomePage = action.payload?.items.slice(0, 8);
+          }else{
+            state.listTestForHomePage = action.payload?.items;
+          }
         }
       })
       .addCase(fetchListTestForHomePage.rejected, (state, action) => {

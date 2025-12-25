@@ -1,12 +1,11 @@
 'use client';
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useMemo, useEffect, useCallback } from 'react';
 import TestCard from '@/components/TestCard/TestCard';
 import FilterTest from './components/FilterTest';
 import { Pagination } from '@nextui-org/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchListTest } from '@/stores/testSlice';
 import TestListSkeleton from '@/components/Skeletons/TestListSkeleton';
-import QR from 'query-string';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const DEFAULT_PAGE_SIZE = 8;
@@ -17,53 +16,65 @@ export default function TestsScreen() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const {
-    listTest,
-    loading,
-    filter: { page, pageSize },
-    total,
-  } = useSelector((state) => state.test);
-  const [filter, setFilter] = useState({});
+  const { listTest, loading } = useSelector((state) => state.test);
+  
+  // Get search and page from URL
+  const searchTerm = searchParams.get('search') || '';
+  const currentPage = parseInt(searchParams.get('page') || '1',  10);
 
-  const queryString = useMemo(() => {
-    return {
-      test_name: searchParams.get('search') || '',
-      page: searchParams.get('page') || 1,
-      limit: searchParams.get('pageSize') || DEFAULT_PAGE_SIZE,
-    };
-  }, [searchParams]);
-
+  // Fetch all tests once on mount
   useEffect(() => {
-    setFilter(QR.parse(QR.stringify(queryString), { arrayFormat: 'comma' }));
-  }, [queryString]);
+    // Fetch without any filter to get all tests
+    dispatch(fetchListTest({}));
+  }, [dispatch]);
 
-  useEffect(() => {
-    dispatch(fetchListTest(filter));
-  }, [dispatch, filter]);
-
-  const renderPagination = useCallback(() => {
-    if (total > pageSize) {
-      return (
-        <div className="flex w-full justify-center">
-          <Pagination
-            color="primary"
-            size="md"
-            showControls
-            total={Math.ceil(total / pageSize)}
-            page={page}
-            onChange={handlePageChange}
-            dotsJump={total / pageSize - 1}
-          />
-        </div>
-      );
+  // Filter and paginate tests in frontend
+  const { filteredTests, paginatedTests, totalPages } = useMemo(() => {
+    // Filter by search term
+    let filtered = listTest;
+    
+    if (searchTerm) {
+      filtered = listTest.filter((test) => {
+        const name = (test.name || test.title || '').toLowerCase();
+        return name.includes(searchTerm.toLowerCase());
+      });
     }
-  }, [total, page, pageSize]);
+
+    // Calculate pagination
+    const total = Math.ceil(filtered.length / DEFAULT_PAGE_SIZE);
+    const startIndex = (currentPage - 1) * DEFAULT_PAGE_SIZE;
+    const endIndex = startIndex + DEFAULT_PAGE_SIZE;
+    const paginated = filtered.slice(startIndex, endIndex);
+
+    return {
+      filteredTests: filtered,
+      paginatedTests: paginated,
+      totalPages: total,
+    };
+  }, [listTest, searchTerm, currentPage]);
 
   const handlePageChange = (page) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', page);
     router.push(`${pathname}?${params.toString()}`);
   };
+
+  const renderPagination = useCallback(() => {
+    if (totalPages > 1) {
+      return (
+        <div className="flex w-full justify-center">
+          <Pagination
+            color="primary"
+            size="md"
+            showControls
+            total={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+          />
+        </div>
+      );
+    }
+  }, [totalPages, currentPage]);
 
   return (
     <div className="p-4 md:p-6">
@@ -73,14 +84,14 @@ export default function TestsScreen() {
           <div className="w-24 h-1 bg-blue-500 mx-auto"></div>
         </div>
 
-        <FilterTest filter={filter} setFilter={setFilter} />
+        <FilterTest />
 
         <div className="bg-bgSecondary shadow-lg pb-4">
           {loading ? (
             <TestListSkeleton count={8} />
-          ) : listTest.length > 0 ? (
+          ) : paginatedTests.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-8  p-4 md:p-6">
-              {listTest.map((test) => (
+              {paginatedTests.map((test) => (
                 <TestCard key={test.id} test={test} />
               ))}
             </div>
