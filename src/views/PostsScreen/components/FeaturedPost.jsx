@@ -47,7 +47,7 @@ export function FeaturedPost({ post }) {
           </div>
 
           <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight">
-            <Link href={`/blog/${post.id}`} className="hover:text-blue-600 transition-colors">
+            <Link href={`/posts/${post.id}`} className="hover:text-blue-600 transition-colors">
               {post.title}
             </Link>
           </h2>
@@ -79,7 +79,7 @@ export function FeaturedPost({ post }) {
           </div>
 
           <Link
-            href={`/blog/${post.id}`}
+            href={`/posts/${post.id}`}
             className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
           >
             Read More
