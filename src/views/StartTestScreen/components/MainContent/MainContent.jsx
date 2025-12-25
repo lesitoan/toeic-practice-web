@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowRight, Volume2 } from 'lucide-react';
+import PassageContentPreview from '../PassageContentPreview/PassageContentPreview';
 
 export default function MainContent({
   currentQuestion,
@@ -73,11 +74,14 @@ export default function MainContent({
 
     return (
       <div className="p-6">
+        {/* Render group-level content preview */}
+        <PassageContentPreview passage={passage} />
+
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Câu {questionData.position}.</h3>
 
           {/* Render passage if required or if it's a listening part with audio */}
-          {(requiresPassage || (isListeningPart && passage?.type === 'AUDIO')) && passage && (
+          {/* {(requiresPassage || (isListeningPart && passage?.type === 'AUDIO')) && passage && (
             <div className="mb-6">
               {passage.type === 'IMAGE' && (
                 <div className="mb-6">
@@ -127,7 +131,7 @@ export default function MainContent({
                 </div>
               )}
             </div>
-          )}
+          )} */}
 
           {/* Render question content */}
           {questionData.content && (
