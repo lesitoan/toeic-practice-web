@@ -68,8 +68,11 @@ const VocabularyTranslator = () => {
 
   const playPronunciation = (text) => {
     if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = isVietnameseToEnglish ? 'en-US' : 'vi-VN';
+      // Determine which text is English
+      const englishText = isVietnameseToEnglish ? translation?.translation : translation?.input;
+      
+      const utterance = new SpeechSynthesisUtterance(englishText || text);
+      utterance.lang = 'en-US'; // Always use English
       speechSynthesis.speak(utterance);
     }
   };
