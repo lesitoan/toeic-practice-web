@@ -2,6 +2,7 @@ export const NAVIGATE_ITEM = [
   { name: 'Giới thiệu', href: '/about' },
   { name: 'Học từ vựng', href: '/vocabulary' },
   { name: 'Đề thi online', href: '/tests' },
+  { name: 'Lớp học', href: '/class' },
   { name: 'Flashcards', href: '/flashcards' },
   { name: 'Blog', href: '/posts' },
   { name: 'Nâng cấp tài khoản', href: '/pricing' },

@@ -6,73 +6,73 @@ const CommunityFeedback = () => {
     {
       id: 1,
       user: {
-        name: 'Banda Aditi',
+        name: 'Văn An',
         avatar:
           'https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=60&h=60&fit=crop&crop=face&auto=format',
-        role: 'Student',
+        role: 'Sinh viên',
       },
       content:
-        'Using this platform has completely transformed how we approach product design. The detailed interface and versatile features have allowed us to create an engaging user experience with ease. Transforming every step of the design process.',
+        'Nền tảng này thực sự hữu ích cho việc luyện thi TOEIC. Giao diện thân thiện, đề thi chất lượng cao và hệ thống chấm điểm chính xác giúp tôi cải thiện điểm số rất nhiều.',
       rating: 5,
     },
     {
       id: 2,
       user: {
-        name: 'Nguyễn Văn An',
+        name: 'Quốc Bảo',
         avatar:
           'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face&auto=format',
-        role: 'Developer',
+        role: 'Lập trình viên',
       },
       content:
-        'Nền tảng này thực sự hữu ích cho việc học lập trình. Giao diện thân thiện, bài giảng chất lượng cao và hệ thống bài tập phong phú giúp tôi nâng cao kỹ năng rất nhiều.',
+        'Tôi đã tăng được 200 điểm TOEIC chỉ sau 2 tháng luyện tập. Đặc biệt từ điển tích hợp rất tiện lợi, không cần chuyển tab khi gặp từ mới.',
       rating: 5,
     },
     {
       id: 3,
       user: {
-        name: 'Sarah Johnson',
+        name: 'Minh Thư',
         avatar:
           'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop&crop=face&auto=format',
-        role: 'Designer',
+        role: 'Nhân viên văn phòng',
       },
       content:
-        'The learning experience here is exceptional. Clear explanations, practical examples, and supportive community make it perfect for skill development.',
-      rating: 4,
+        'Bộ đề thi mô phỏng rất sát với đề thật. Tôi đã tự tin hơn rất nhiều khi bước vào phòng thi nhờ luyện tập đều đặn trên TOEIC Practice.',
+      rating: 5,
     },
     {
       id: 4,
       user: {
-        name: 'Trần Minh Đức',
+        name: 'Hoàng Nam',
         avatar:
           'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face&auto=format',
-        role: 'Student',
+        role: 'Học viên',
       },
       content:
-        'Khóa học rất chi tiết và dễ hiểu. Giảng viên nhiệt tình, hỗ trợ học viên tận tâm. Tôi đã học được rất nhiều kiến thức bổ ích từ đây.',
+        'Khóa học rất chi tiết và dễ hiểu. Phần Listening được hỗ trợ tốt với âm thanh chuẩn. Phần Reading có giải thích từ vựng rất kỹ càng.',
       rating: 5,
     },
     {
       id: 5,
       user: {
-        name: 'Emily Chen',
+        name: 'Thanh Mai',
         avatar:
           'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=60&h=60&fit=crop&crop=face&auto=format',
-        role: 'Marketing Manager',
+        role: 'Marketing',
       },
       content:
-        'Great platform for continuous learning. The content is well-structured and the interface is intuitive. Highly recommend for professional development.',
+        'Flashcard từ vựng giúp tôi ghi nhớ từ mới hiệu quả. Hệ thống ôn tập theo chu kỳ rất khoa học, phù hợp với người đi làm như tôi.',
       rating: 4,
     },
     {
       id: 6,
       user: {
-        name: 'Lê Thu Hương',
+        name: 'Thu Hương',
         avatar:
           'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&h=60&fit=crop&crop=face&auto=format',
-        role: 'Teacher',
+        role: 'Giáo viên',
       },
       content:
-        'Một nền tảng học tập tuyệt vời! Nội dung phong phú, cách trình bày sinh động. Học sinh của tôi rất thích học trên đây và tiến bộ nhanh chóng.',
+        'Một nền tảng học tập tuyệt vời! Tôi thường giới thiệu cho học sinh của mình. Các em rất thích học trên đây và tiến bộ nhanh chóng.',
       rating: 5,
     },
   ]);
@@ -83,9 +83,16 @@ const CommunityFeedback = () => {
   });
 
   const [currentFeedbackIndex, setCurrentFeedbackIndex] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleSubmitFeedback = () => {
+  const handleSubmitFeedback = async () => {
     if (!newFeedback.content.trim()) return;
+
+    setIsSubmitting(true);
+
+    // Simulate API call with 5 second loading
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
     const feedback = {
       id: Date.now(),
@@ -100,7 +107,14 @@ const CommunityFeedback = () => {
     };
 
     setFeedbacks([feedback, ...feedbacks]);
-    setNewFeedback({ content: '', rating: 5 });
+    setIsSubmitting(false);
+    setShowSuccess(true);
+
+    // Reset form after 2 seconds
+    setTimeout(() => {
+      setNewFeedback({ content: '', rating: 5 });
+      setShowSuccess(false);
+    }, 2000);
   };
 
   const displayedFeedbacks = feedbacks.slice(currentFeedbackIndex, currentFeedbackIndex + 6);
@@ -165,7 +179,7 @@ const CommunityFeedback = () => {
               </div>
             </div>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              Feedback from Our Community
+              Phản hồi từ cộng đồng
             </h2>
             <p className="text-sm md:text-base text-gray-600">
               Hàng nghìn học viên đã chia sẻ trải nghiệm tuyệt vời của họ
@@ -270,14 +284,35 @@ const CommunityFeedback = () => {
               </div>
 
               {/* Submit Button */}
-              <button
-                onClick={handleSubmitFeedback}
-                disabled={!newFeedback.content.trim() || newFeedback.content.length < 10}
-                className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 md:py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium text-sm md:text-base"
-              >
-                <Send className="w-4 h-4" />
-                <span>Gửi feedback</span>
-              </button>
+              {showSuccess ? (
+                <div className="w-full flex items-center justify-center space-x-2 bg-green-500 text-white py-2 md:py-3 rounded-lg font-medium text-sm md:text-base">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>Đã gửi thành công!</span>
+                </div>
+              ) : (
+                <button
+                  onClick={handleSubmitFeedback}
+                  disabled={!newFeedback.content.trim() || newFeedback.content.length < 10 || isSubmitting}
+                  className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 md:py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium text-sm md:text-base"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      <span>Đang gửi...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>Gửi feedback</span>
+                    </>
+                  )}
+                </button>
+              )}
 
               {/* Tips */}
               <div className="mt-4 md:mt-6 p-3 md:p-4 bg-blue-50 rounded-lg">

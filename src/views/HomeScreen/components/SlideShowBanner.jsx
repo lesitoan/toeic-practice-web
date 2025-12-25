@@ -40,12 +40,12 @@ export default function SlideShowBanner() {
     },
   ];
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [slides.length]);
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setCurrentSlide((prev) => (prev + 1) % slides.length);
+  //   }, 1000);
+  //   return () => clearInterval(timer);
+  // }, [slides.length]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
