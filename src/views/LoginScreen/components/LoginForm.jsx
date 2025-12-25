@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Facebook, FacebookIcon, LucideYoutube } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button, Checkbox, Input } from '@nextui-org/react';
@@ -25,6 +25,53 @@ const SignupForm = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
+
+  // Listen for Google OAuth callback
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data?.type === 'GOOGLE_AUTH_SUCCESS') {
+        const { accessToken, refreshToken } = event.data;
+        
+        if (accessToken && refreshToken) {
+          // Save tokens
+          dispatch(MineSlice.actions.setAccessToken(accessToken));
+          dispatch(MineSlice.actions.setRefreshToken(refreshToken));
+          requestHelpers.setAuthorizationToken(accessToken);
+          
+          setCookies(USER_ACCESS_TOKEN, accessToken, {
+            path: '/',
+            maxAge: 30 * 60 * 1000,
+          });
+          setCookies(USER_REFRESH_TOKEN, refreshToken, {
+            path: '/',
+            maxAge: 7 * 24 * 60 * 60,
+          });
+
+          // Fetch user info
+          authServices.getMe().then(() => {
+            toast.success('Đăng nhập Google thành công!');
+            router.push('/');
+          });
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [dispatch, setCookies, router]);
+
+  const handleGoogleLogin = () => {
+    const width = 600;
+    const height = 700;
+    const left = window.screen.width / 2 - width / 2;
+    const top = window.screen.height / 2 - height / 2;
+
+    window.open(
+      `${process.env.NEXT_PUBLIC_API}/api/v1/authentication/login/google`,
+      'Google Login',
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
+  };
 
   const handleLogin = async (data) => {
     setLoading(true);
@@ -154,7 +201,7 @@ const SignupForm = () => {
           <Button
             color="default"
             className="w-full rounded-lg h-12 shadow-md cursor-pointer bg-orange-400"
-            type="submit"
+            onPress={handleGoogleLogin}
           >
             Google
           </Button>
